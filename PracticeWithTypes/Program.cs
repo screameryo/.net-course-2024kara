@@ -1,4 +1,5 @@
 ﻿using Models;
+using Services;
 
 namespace PracticeWithTypes
 {
@@ -34,6 +35,25 @@ namespace PracticeWithTypes
             ChangeCurrency(ref currency);
             Console.WriteLine($"Changing the NumCode of the currency to {currency.NumCode}{Environment.NewLine}");
             Console.WriteLine($"Object currency is {currency.Name} with Code: {currency.Code} Symbol: {currency.Symbol} NumCode: {currency.NumCode}{Environment.NewLine}");
+
+            //Create a List of employees with positions Owner
+            List<Employee> employees = new List<Employee>
+            {
+                new Employee("John", "Doe", new DateOnly(2020, 1, 1)) { Position = "Owner" },
+                new Employee("Jane", "Doe", new DateOnly(2020, 1, 1)) { Position = "Owner" },
+                new Employee("Jason", "Doe", new DateOnly(2020, 1, 1)) { Position = "Owner" }
+            };
+
+            //Get the owner salary
+            var bankService = new BankService();
+            var ownerSalary = bankService.CalculateOwnerSalary(1000000, 500000, employees);
+            Console.WriteLine($"Owner salary is {ownerSalary}{Environment.NewLine}");
+
+            //Create a client object
+            var client = new Client("John", "Doe", new DateOnly(2020, 1, 1));        
+            Console.WriteLine($"Creating a client object {client.GetFullName()}{Environment.NewLine}");
+            var newemployee = bankService.ConvertClientToEmployee(client, "Backend", "Develop", 100000);
+            Console.WriteLine($"Client now is jbject employee is {newemployee.GetEmployeeInfo()}{Environment.NewLine}{Environment.NewLine}");
         }
 
         //Change the contract of the employee

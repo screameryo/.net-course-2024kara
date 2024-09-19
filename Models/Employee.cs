@@ -12,7 +12,7 @@
         /// <summary>
         /// Salary of the employee in the bank
         /// </summary>
-        public decimal Salary { get; set; }
+        public int Salary { get; set; }
 
         /// <summary>
         /// Department of the employee in the bank
