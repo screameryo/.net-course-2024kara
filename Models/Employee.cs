@@ -25,7 +25,16 @@
         /// <returns></returns>
         public string GetEmployeeInfo()
         {
-            return $"{GetFullName()} is a {Position} in the {Department} department.";
+            return $"{GetFullName()} is a {Position} in the {Department} department with contract \"{GetContract()}\"";
+        }
+
+        /// <summary>
+        /// Get the contract of the employee
+        /// </summary>
+        /// <returns></returns>
+        public string GetContract()
+        {
+            return Contract is null ? "No contract" : Contract;
         }
 
         /// <summary>
@@ -49,6 +58,6 @@
         /// <summary>
         /// Contract of the employee in the bank
         /// </summary>
-        public string Contract { get; set; }
+        public string? Contract { get; set; }
     }
 }
