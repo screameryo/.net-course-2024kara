@@ -1,13 +1,16 @@
-﻿namespace Models
+﻿namespace BankSystem.Domain.Models
 {
     public class Person
     {
-        public Person(string FName, string LName, DateOnly BDate, string? MName = null)
+        public Person(string FName, string LName, DateOnly BDate, string Passport, string Address, string Telephone,  string? MName = null)
         {
             this.FName = FName;
             this.LName = LName;
             this.MName = MName;
             this.BDate = BDate;
+            this.Passport = Passport;
+            this.Telephone = Telephone;
+            this.Address = Address;
         }
 
         /// <summary>
@@ -38,7 +41,7 @@
         /// <summary>
         /// Telephone of the person
         /// </summary>
-        public string? Telephone { get; set; }
+        public string Telephone { get; set; }
 
         /// <summary>
         /// Adress of the person

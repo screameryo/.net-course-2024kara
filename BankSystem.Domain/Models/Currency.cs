@@ -1,4 +1,4 @@
-﻿namespace Models
+﻿namespace BankSystem.Domain.Models
 {
     public class Currency
     {

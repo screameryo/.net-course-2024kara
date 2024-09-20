@@ -1,8 +1,8 @@
-﻿namespace Models
+﻿namespace BankSystem.Domain.Models
 {
     public class Client : Person
     {
-        public Client(string FName, string LName, DateOnly BDate, string? MName = null) : base(FName, LName, BDate, MName) { }
+        public Client(string FName, string LName, DateOnly BDate, string Passport, string Address, string Telephone, string? MName = null) : base(FName, LName, BDate, Passport, Address, Telephone, MName) { }
 
         /// <summary>
         /// Get the full name of the client

@@ -1,8 +1,16 @@
-﻿namespace Models
+﻿using System.Xml.Linq;
+
+namespace BankSystem.Domain.Models
 {
     public class Employee : Person
     {
-        public Employee(string FName, string LName, DateOnly BDate, string? MName = null) : base(FName, LName, BDate, MName) { }
+        public Employee(string FName, string LName, DateOnly BDate, string Passport, string Address, string Position, int Salary, string Department, string Telephone, string? Contract = null, string? MName = null) : base(FName, LName, BDate, Passport, Address, Telephone, MName)
+        {
+            this.Position = Position;
+            this.Salary = Salary;
+            this.Department = Department;
+            this.Contract = Contract;
+        }
 
         /// <summary>
         /// Position of the employee in the bank

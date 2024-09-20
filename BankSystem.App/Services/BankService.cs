@@ -1,6 +1,6 @@
-﻿using Models;
+﻿using BankSystem.Domain.Models;
 
-namespace Services
+namespace BankSystem.App.Services
 {
     public class BankService
     {
@@ -38,12 +38,7 @@ namespace Services
         /// <returns></returns>
         public Employee ConvertClientToEmployee(Client client, string position, string department, int salary)
         {
-            return new Employee(client.FName, client.LName, client.BDate, client.MName)
-            {
-                Position = position,
-                Department = department,
-                Salary = salary
-            };
+            return new Employee(client.FName, client.LName, client.BDate, client.Passport, client.Address, position, salary, department, client.Telephone, null, client.MName);
         }
     }
 }
