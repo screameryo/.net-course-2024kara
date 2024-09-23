@@ -2,8 +2,6 @@
 {
     public class Person
     {
-        public Person(string FName, string LName, DateOnly BDate, string Passport, string Address, string Telephone, string? MName = null) { }
-
         public string FName { get; set; }
 
         public string LName { get; set; }
