@@ -8,11 +8,11 @@ namespace Practice
         static void Main(string[] args)
         {
             // Create a person object
-            var person = new Person("John", "Doe", new DateOnly(2020, 1, 1), "PMR56564", "str. 1", "123456789", null);
+            var person = new Person() { FName = "John", LName = "Doe", BDate = new DateOnly(2020, 1, 1), Passport = "PMR56564", Telephone = "77712345", Address = "str. 1" };
             Console.WriteLine($"Creating a person object {person.FName} {person.LName}{Environment.NewLine}");
 
             //Create a employee object with no contract
-            var employee = new Employee("Janes", "Doe", new DateOnly(2020, 1, 1), "PMR56564", "77712345", "str. 1");
+            var employee = new Employee() { FName = "John", LName = "Doe", Address = "str. 1", BDate = new DateOnly(2020, 1, 1), Passport = "PMR56564", Telephone = "77712345" };
             employee.Position = "Backend";
             employee.Salary = 100000;
             employee.Department = "Develop";
@@ -42,9 +42,9 @@ namespace Practice
             //Create a List of employees with positions Owner
             List<Employee> employees = new List<Employee>
             {
-                new Employee("John", "Doe", new DateOnly(2020, 1, 1), "PMR56564", "77712345", "str. 1") { Position = "Owner", Salary = 500000 },
-                new Employee("Jane", "Doe", new DateOnly(2020, 1, 1), "PMR56564", "77712345", "str. 1") { Position = "Owner", Salary = 500000 },
-                new Employee("Janes", "Doe", new DateOnly(2020, 1, 1), "PMR56564", "77712345", "str. 1") { Position = "Backend", Salary = 100000, Department = "Develop" }
+                new Employee() { FName = "John", LName = "Doe", Position = "Owner", Salary = 1000000 },
+                new Employee() { FName = "Jane", LName = "Doe", Position = "Owner", Salary = 500000 },
+                new Employee() { FName = "Janes", LName = "Doe", Position = "Backend", Salary = 100000 },
             };
 
             //Get the owner salary
@@ -53,7 +53,7 @@ namespace Practice
             Console.WriteLine($"Owner salary is {ownerSalary}{Environment.NewLine}");
 
             //Create a client object
-            var client = new Client("John", "Doe", new DateOnly(2020, 1, 1), "PMR56564", "str. 1", "123456789", null);
+            var client = new Client() { FName = "John", LName = "Doe", BDate = new DateOnly(2020, 1, 1), Passport = "PMR56564", Address = "str. 1", Telephone = "123456789" };
             Console.WriteLine($"Creating a client object {client.FName} {client.LName}{Environment.NewLine}");
             var newemployee = bankService.ConvertClientToEmployee(client, "Backend", "Develop", 100000);
             Console.WriteLine($"Client now is jbject employee {Environment.NewLine}");

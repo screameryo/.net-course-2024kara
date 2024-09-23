@@ -23,7 +23,18 @@ namespace BankSystem.App.Services
 
         public Employee ConvertClientToEmployee(Client client, string position, string department, int salary)
         {
-            return new Employee(client.FName, client.LName, client.BDate, client.Passport, client.Telephone, client.Address);
+            return new Employee()
+            {
+                FName = client.FName,
+                LName = client.LName,
+                BDate = client.BDate,
+                Passport = client.Passport,
+                Address = client.Address,
+                Telephone = client.Telephone,
+                Position = position,
+                Department = department,
+                Salary = salary
+            };
         }
     }
 }
