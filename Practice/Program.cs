@@ -88,10 +88,16 @@ namespace Practice
             watch.Stop();
             Console.WriteLine($"Search employee with min salary: {watch.ElapsedMilliseconds} ms ({watch.ElapsedTicks} ticks). {Environment.NewLine}");
 
+            //при помощи метода LastOrDefault(ищем последний элемент коллекции из словаря
             watch.Restart();
-            var clientSearchDictionaryFirstOrDefault = clientsDictionary.FirstOrDefault(x => x.Key == findtelephonefordictionary).Value;
+            var clientSearchDictionaryLastOrDefault = clientsDictionary.LastOrDefault();
             watch.Stop();
-            Console.WriteLine($"Search client in clientsDictionary by firstorddefault: {watch.ElapsedMilliseconds} ms ({watch.ElapsedTicks} ticks){Environment.NewLine}");
+            Console.WriteLine($"Search client in clientsDictionary by lastOrDefault: {watch.ElapsedMilliseconds} ms ({watch.ElapsedTicks} ticks){Environment.NewLine}");
+
+            watch.Restart();
+            var clientsearchbykey = clientsDictionary[findtelephonefordictionary];
+            watch.Stop();
+            Console.WriteLine($"Search client in clientsDictionary by key: {watch.ElapsedMilliseconds} ms ({watch.ElapsedTicks} ticks){Environment.NewLine}");
 
             Console.ReadKey();
         }
