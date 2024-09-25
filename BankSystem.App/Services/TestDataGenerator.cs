@@ -5,7 +5,7 @@ namespace BankSystem.App.Services
 {
     public class TestDataGenerator
     {
-        public void GenerateEmployee(ref List<Employee> employees)
+        public List<Employee> GenerateEmployee()
         {
             var faker = new Faker<Employee>()
                 .RuleFor(e => e.FName, f => f.Name.FirstName())
@@ -19,13 +19,10 @@ namespace BankSystem.App.Services
                 .RuleFor(e => e.Department, f => f.Name.JobArea())
                 .RuleFor(e => e.Contract, f => f.Random.Bool() ? $"Contract to {DateTime.Now.AddMonths(f.Random.Number(1, 24)).ToString("d")}" : null);
 
-            for (int i = 0; i < 1000; i++)
-            {
-                employees.Add(faker.Generate());
-            }
+            return faker.Generate(1000);
         }
 
-        public void GenerateClient(ref List<Client> clients)
+        public List<Client> GenerateClient()
         {
             var faker = new Faker<Client>()
                 .RuleFor(c => c.FName, f => f.Name.FirstName())
@@ -36,13 +33,10 @@ namespace BankSystem.App.Services
                 .RuleFor(c => c.Address, f => f.Address.FullAddress())
                 .RuleFor(c => c.Ch_Account, f => f.Random.Number(100, 10000).ToString());
 
-            for (int i = 0; i < 1000; i++)
-            {
-                clients.Add(faker.Generate());
-            }
+            return faker.Generate(1000);
         }
 
-        public void GenerateClientAsDictionary(ref Dictionary<string, Client> clients)
+        public Dictionary<string, Client> GenerateClientAsDictionary()
         {
             var faker = new Faker<Client>()
                 .RuleFor(c => c.FName, f => f.Name.FirstName())
@@ -53,19 +47,7 @@ namespace BankSystem.App.Services
                 .RuleFor(c => c.Address, f => f.Address.FullAddress())
                 .RuleFor(c => c.Ch_Account, f => f.Random.Number(100, 10000).ToString());
 
-            for (int i = 0; i < 1000; i++)
-            {
-                var client = faker.Generate();
-                try
-                {
-                    clients.Add(client.Telephone, client);
-                }
-                catch (Exception)
-                {
-                    i--;
-                }
-                
-            }
+            return faker.Generate(1000).ToDictionary(c => c.Passport);
         }
     }
 }

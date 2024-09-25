@@ -8,6 +8,25 @@ namespace Practice
     {
         static void Main(string[] args)
         {
+            PracticeOneRefValType();
+
+            PracticeTwoListDict();
+
+            Console.ReadKey();
+        }
+
+        private static void ChangeContract(ref Employee employee)
+        {
+            employee.Contract = $"Contract to {DateTime.Now.AddMonths(36).ToString("d")}";
+        }
+
+        private static void ChangeCurrency(ref Currency currency)
+        {
+            currency.NumCode = 840;
+        }
+
+        private static void PracticeOneRefValType()
+        {
             var person = new Person() { FName = "John", LName = "Doe", BDate = new DateOnly(2020, 1, 1), Passport = "PMR56564", Telephone = "77712345", Address = "str. 1" };
             Console.WriteLine($"Creating a person object {person.FName} {person.LName}{Environment.NewLine}");
 
@@ -49,18 +68,18 @@ namespace Practice
             Console.WriteLine($"Creating a client object {client.FName} {client.LName}{Environment.NewLine}");
             var newemployee = bankService.ConvertClientToEmployee(client, "Backend", "Develop", 100000);
             Console.WriteLine($"Client now is jbject employee {Environment.NewLine}");
+        }
 
+        private static void PracticeTwoListDict()
+        {
             var testDataGenerator = new TestDataGenerator();
-            List<Employee> employeesList = new List<Employee>();
-            testDataGenerator.GenerateEmployee(ref employeesList);
+            List<Employee> employeesList = testDataGenerator.GenerateEmployee();
             Console.WriteLine($"Generating 10000 fake employee data{Environment.NewLine}");
 
-            List<Client> clientsList = new List<Client>();
-            testDataGenerator.GenerateClient(ref clientsList);
+            List<Client> clientsList = testDataGenerator.GenerateClient();
             Console.WriteLine($"Generating 10000 fake client data{Environment.NewLine}");
 
-            Dictionary<string, Client> clientsDictionary = new Dictionary<string, Client>();
-            testDataGenerator.GenerateClientAsDictionary(ref clientsDictionary);
+            Dictionary<string, Client> clientsDictionary = testDataGenerator.GenerateClientAsDictionary();
             Console.WriteLine($"Generating 10000 fake client data as dictionary{Environment.NewLine}");
 
             Stopwatch watch = new Stopwatch();
@@ -84,11 +103,10 @@ namespace Practice
             Console.WriteLine($"Search clients where age < 30: {watch.ElapsedMilliseconds} ms ({watch.ElapsedTicks} ticks). Counts: {clientsAge.Count()}{Environment.NewLine}");
 
             watch.Restart();
-            var employeeMinSalary = employees.OrderBy(x => x.Salary).FirstOrDefault();
+            var employeeMinSalary = employeesList.OrderBy(x => x.Salary).FirstOrDefault();
             watch.Stop();
             Console.WriteLine($"Search employee with min salary: {watch.ElapsedMilliseconds} ms ({watch.ElapsedTicks} ticks). {Environment.NewLine}");
 
-            //при помощи метода LastOrDefault(ищем последний элемент коллекции из словаря
             watch.Restart();
             var clientSearchDictionaryLastOrDefault = clientsDictionary.LastOrDefault();
             watch.Stop();
@@ -98,18 +116,6 @@ namespace Practice
             var clientsearchbykey = clientsDictionary[findtelephonefordictionary];
             watch.Stop();
             Console.WriteLine($"Search client in clientsDictionary by key: {watch.ElapsedMilliseconds} ms ({watch.ElapsedTicks} ticks){Environment.NewLine}");
-
-            Console.ReadKey();
-        }
-
-        private static void ChangeContract(ref Employee employee)
-        {
-            employee.Contract = $"Contract to {DateTime.Now.AddMonths(36).ToString("d")}";
-        }
-
-        private static void ChangeCurrency(ref Currency currency)
-        {
-            currency.NumCode = 840;
         }
     }
 }
