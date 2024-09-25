@@ -33,3 +33,4 @@ bld/
 *.sln.docstates
 .idea/
 logs/
+/.cr/personal/FavoritesList/List.xml
