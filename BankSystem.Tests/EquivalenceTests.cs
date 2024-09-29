@@ -11,7 +11,7 @@ namespace BankSystem.Tests
         {
             TestDataGenerator generator = new TestDataGenerator();
 
-            Dictionary <Client, Account> clientDictionary = generator.GenerateDictionaryClientsAndAccounts();
+            Dictionary<Client, Account> clientDictionary = generator.GenerateDictionaryClientsAndAccounts();
 
             int rand = new Random().Next(0, 100);
             Client newclient = new Client()
@@ -33,7 +33,7 @@ namespace BankSystem.Tests
         {
             TestDataGenerator generator = new TestDataGenerator();
 
-            Dictionary <Client, List<Account>> clientDictionary = generator.GenerateDictionaryClientsAndManyAccounts();
+            Dictionary<Client, List<Account>> clientDictionary = generator.GenerateDictionaryClientsAndManyAccounts();
 
             int rand = new Random().Next(0, 100);
             Client newclient = new Client()
@@ -109,10 +109,71 @@ namespace BankSystem.Tests
                 Address = employees[rand].Address,
                 Position = employees[rand].Position,
                 Department = employees[rand].Department,
-                Salary = employees[rand].Salary
+                Salary = employees[rand].Salary,
+                Contract = employees[rand].Contract
             };
 
             Assert.Equal(employees[rand], newEmployee);
+        }
+
+        [Fact]
+        public void CompareClientAccountPositivTest()
+        {
+            TestDataGenerator generator = new TestDataGenerator();
+
+            Dictionary<Client, Account> clientDictionary = generator.GenerateDictionaryClientsAndAccounts();
+
+            int rand = new Random().Next(0, 100);
+            Client newclient = new Client()
+            {
+                FName = clientDictionary.Keys.ElementAt(rand).FName,
+                LName = clientDictionary.Keys.ElementAt(rand).LName,
+                MName = clientDictionary.Keys.ElementAt(rand).MName,
+                BDate = clientDictionary.Keys.ElementAt(rand).BDate,
+                Passport = clientDictionary.Keys.ElementAt(rand).Passport,
+                Telephone = clientDictionary.Keys.ElementAt(rand).Telephone,
+                Address = clientDictionary.Keys.ElementAt(rand).Address
+            };
+
+            Account newAccount = new Account()
+            {
+                Currency = clientDictionary[newclient].Currency,
+                Amount = clientDictionary[newclient].Amount
+            };
+
+            Assert.Equal(clientDictionary[newclient], newAccount);
+        }
+
+        [Fact]
+        public void CompareClientManyAccountsPositivTest()
+        {
+            TestDataGenerator generator = new TestDataGenerator();
+
+            Dictionary<Client, List<Account>> clientDictionary = generator.GenerateDictionaryClientsAndManyAccounts();
+
+            int rand = new Random().Next(0, 100);
+            Client newclient = new Client()
+            {
+                FName = clientDictionary.Keys.ElementAt(rand).FName,
+                LName = clientDictionary.Keys.ElementAt(rand).LName,
+                MName = clientDictionary.Keys.ElementAt(rand).MName,
+                BDate = clientDictionary.Keys.ElementAt(rand).BDate,
+                Passport = clientDictionary.Keys.ElementAt(rand).Passport,
+                Telephone = clientDictionary.Keys.ElementAt(rand).Telephone,
+                Address = clientDictionary.Keys.ElementAt(rand).Address
+            };
+
+            List<Account> newAccounts = new List<Account>();
+            foreach (var account in clientDictionary[newclient])
+            {
+                newAccounts.Add(new Account()
+                {
+                    Currency = account.Currency,
+                    Amount = account.Amount
+                });
+            }
+
+            Assert.Equal(clientDictionary[newclient], newAccounts);
         }
     }
 }

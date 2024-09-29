@@ -18,7 +18,17 @@
             }
 
             Employee e = (Employee)obj;
-            return FName == e.FName && LName == e.LName && MName == e.MName && BDate == e.BDate && Passport == e.Passport && Telephone == e.Telephone && Address == e.Address && Position == e.Position && Salary == e.Salary && Department == e.Department && Contract == e.Contract;
+            return FName == e.FName 
+                && LName == e.LName 
+                && MName == e.MName 
+                && BDate == e.BDate 
+                && Passport == e.Passport 
+                && Telephone == e.Telephone 
+                && Address == e.Address 
+                && Position == e.Position 
+                && Salary == e.Salary 
+                && Department == e.Department
+                && Contract == e.Contract;
         }
 
         public override int GetHashCode()

@@ -17,7 +17,7 @@ namespace BankSystem.App.Services
                 .RuleFor(e => e.Position, f => f.Name.JobTitle())
                 .RuleFor(e => e.Salary, f => f.Random.Number(10000, 100000))
                 .RuleFor(e => e.Department, f => f.Name.JobArea())
-                .RuleFor(e => e.Contract, f => f.Random.Bool() ? $"Contract to {DateTime.Now.AddMonths(f.Random.Number(1, 24)).ToString("d")}" : null);
+                .RuleFor(e => e.Contract, f => $"Contract to {DateTime.Now.AddMonths(f.Random.Number(1, 24)).ToString("d")}");
 
             return faker.Generate(1000);
         }
