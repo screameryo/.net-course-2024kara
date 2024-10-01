@@ -52,9 +52,9 @@ namespace BankSystem.Data.Storages
             }
         }
 
-        public int GetSalaryAverage()
+        public int GetAgeAverage()
         {
-            return (int)employees.Average(e => e.Salary);
+            return (int)employees.Average(e => DateTime.Now.Year - e.BDate.Year);
         }
     }
 }
