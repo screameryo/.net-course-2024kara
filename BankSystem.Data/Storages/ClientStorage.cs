@@ -2,9 +2,16 @@
 
 namespace BankSystem.Data.Storages
 {
+    public enum ClientMethod
+    {
+        Younger,
+        Older,
+        Last
+    }
+
     public class ClientStorage
     {
-        public List<Client> clients = new List<Client>();
+        private List<Client> _clients = new List<Client>();
 
         public void AddClient(Client newClient)
         {
@@ -13,7 +20,7 @@ namespace BankSystem.Data.Storages
                 throw new ArgumentNullException(nameof(newClient), "Клиент не может быть null.");
             }
 
-            clients.Add(newClient);
+            _clients.Add(newClient);
         }
 
         public void AddManyClients(List<Client> newClients)
@@ -23,52 +30,32 @@ namespace BankSystem.Data.Storages
                 throw new ArgumentNullException(nameof(newClients), "Список клиентов не может быть null.");
             }
 
-            clients.AddRange(newClients);
+            _clients.AddRange(newClients);
         }
 
-        public Client YoungestClient(List<Client> clients)
+        public List<Client> GetClients()
         {
-            if (clients == null)
-            {
-                throw new ArgumentNullException(nameof(clients), "Список клиентов не может быть null.");
-            }
-
-            if (clients.Count == 0)
-            {
-                throw new ArgumentException("Список клиентов не может быть пустым.", nameof(clients));
-            }
-
-            return clients.OrderBy(c => c.BDate).First();
+            return _clients;
         }
 
-        public Client OldestClient(List<Client> clients)
+        public Client Get(ClientMethod method)
         {
-            if (clients == null)
+            switch (method)
             {
-                throw new ArgumentNullException(nameof(clients), "Список клиентов не может быть null.");
+                case ClientMethod.Younger:
+                    return _clients.OrderBy(c => c.BDate).First();
+                case ClientMethod.Older:
+                    return _clients.OrderByDescending(c => c.BDate).First();
+                case ClientMethod.Last:
+                    return _clients.Last();
+                default:
+                    throw new InvalidOperationException("Неверный метод.");
             }
-
-            if (clients.Count == 0)
-            {
-                throw new ArgumentException("Список клиентов не может быть пустым.", nameof(clients));
-            }
-
-            return clients.OrderByDescending(c => c.BDate).First();
         }
 
-        public int AverageAge()
+        public int GetAgeAverage()
         {
-            if (clients == null)
-            {
-                throw new ArgumentNullException(nameof(clients), "Список клиентов не может быть null.");
-            }
-
-            if (clients.Count == 0)
-            {
-                throw new ArgumentException("Список клиентов не может быть пустым.", nameof(clients));
-            }
-
-            return (int)clients.Average(c => DateTime.Now.Year - c.BDate.Year);
+            return (int)_clients.Average(c => DateTime.Now.Year - c.BDate.Year);
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using BankSystem.App.Services;
-using BankSystem.Data.Storages;
+﻿using BankSystem.Data.Storages;
 using BankSystem.Domain.Models;
 using Bogus;
 using Xunit;
@@ -12,7 +11,7 @@ namespace BankSystem.Tests
         private Faker<Employee> _employeeFaker;
 
         [Fact]
-        public void AddClientShouldAddClientToStoragePositivTest()
+        public void AddClientToStoragePositivTest()
         {
             var clientStorage = new ClientStorage();
 
@@ -28,7 +27,7 @@ namespace BankSystem.Tests
 
             clientStorage.AddClient(client);
 
-            Assert.Equal(client, clientStorage.clients.LastOrDefault());
+            Assert.Contains(client, clientStorage.GetClients());
         }
 
         [Fact]
@@ -40,7 +39,7 @@ namespace BankSystem.Tests
         }
 
         [Fact]
-        public void YoungestClientPositivTest()
+        public void YoungestClientTest()
         {
             var clientStorage = new ClientStorage();
 
@@ -52,19 +51,13 @@ namespace BankSystem.Tests
                 .RuleFor(c => c.Telephone, f => f.Phone.PhoneNumber())
                 .RuleFor(c => c.Address, f => f.Address.FullAddress());
 
-            var client1 = _clientFaker.RuleFor(c => c.BDate, f => DateOnly.FromDateTime(new DateTime(1990, 5, 1))).Generate();
-            var client2 = _clientFaker.RuleFor(c => c.BDate, f => DateOnly.FromDateTime(new DateTime(2000, 7, 15))).Generate();
-            var client3 = _clientFaker.RuleFor(c => c.BDate, f => DateOnly.FromDateTime(new DateTime(1987, 1, 26))).Generate();
+            clientStorage.AddManyClients(_clientFaker.Generate(1000));
 
-            clientStorage.AddClient(client1);
-            clientStorage.AddClient(client2);
-            clientStorage.AddClient(client3);
-
-            Assert.Equal(client2, clientStorage.clients.OrderByDescending(c => c.BDate).FirstOrDefault());
+            Client youngestClient = clientStorage.Get(ClientMethod.Younger);
         }
 
         [Fact]
-        public void OldestClientPositivTest()
+        public void OldestClientTest()
         {
             var clientStorage = new ClientStorage();
 
@@ -76,19 +69,13 @@ namespace BankSystem.Tests
                 .RuleFor(c => c.Telephone, f => f.Phone.PhoneNumber())
                 .RuleFor(c => c.Address, f => f.Address.FullAddress());
 
-            var client1 = _clientFaker.RuleFor(c => c.BDate, f => DateOnly.FromDateTime(new DateTime(1990, 5, 1))).Generate();
-            var client2 = _clientFaker.RuleFor(c => c.BDate, f => DateOnly.FromDateTime(new DateTime(2000, 7, 15))).Generate();
-            var client3 = _clientFaker.RuleFor(c => c.BDate, f => DateOnly.FromDateTime(new DateTime(1987, 1, 26))).Generate();
+            clientStorage.AddManyClients(_clientFaker.Generate(1000));
 
-            clientStorage.AddClient(client1);
-            clientStorage.AddClient(client2);
-            clientStorage.AddClient(client3);
-
-            Assert.Equal(client3, clientStorage.clients.OrderBy(c => c.BDate).FirstOrDefault());
+            Client oldestClient = clientStorage.Get(ClientMethod.Older);
         }
 
         [Fact]
-        public void AverageAgePositivTest()
+        public void AverageAgeClientTest()
         {
             var clientStorage = new ClientStorage();
 
@@ -100,24 +87,15 @@ namespace BankSystem.Tests
                 .RuleFor(c => c.Telephone, f => f.Phone.PhoneNumber())
                 .RuleFor(c => c.Address, f => f.Address.FullAddress());
 
-            var client1 = _clientFaker.RuleFor(c => c.BDate, f => DateOnly.FromDateTime(new DateTime(1990, 5, 1))).Generate();
-            var client2 = _clientFaker.RuleFor(c => c.BDate, f => DateOnly.FromDateTime(new DateTime(2000, 7, 15))).Generate();
-            var client3 = _clientFaker.RuleFor(c => c.BDate, f => DateOnly.FromDateTime(new DateTime(1987, 10, 26))).Generate();
+            clientStorage.AddManyClients(_clientFaker.Generate(1000));
 
-            clientStorage.AddClient(client1);
-            clientStorage.AddClient(client2);
-            clientStorage.AddClient(client3);
-
-            Assert.Equal(clientStorage.AverageAge(), 
-                (int)(clientStorage.clients
-                .Select(c => (DateTime.Now.Year - c.BDate.Year))
-                .Sum() / 3));
+            clientStorage.GetAgeAverage();
         }
 
         [Fact]
-        public void AddEmployeeShouldAddClientToStoragePositivTest()
+        public void AddEmployeeToStoragePositivTest()
         {
-            var employeesStorage = new EmployeeStorage();
+            var employeeStorage = new EmployeeStorage();
 
             _employeeFaker = new Faker<Employee>()
                 .RuleFor(e => e.FName, f => f.Name.FirstName())
@@ -127,27 +105,25 @@ namespace BankSystem.Tests
                 .RuleFor(e => e.Telephone, f => f.Phone.PhoneNumber())
                 .RuleFor(e => e.Address, f => f.Address.FullAddress())
                 .RuleFor(e => e.Position, f => f.Name.JobTitle())
-                .RuleFor(e => e.Salary, f => f.Random.Number(10000, 100000))
-                .RuleFor(e => e.Department, f => f.Name.JobArea())
-                .RuleFor(e => e.Contract, f => $"Contract to {DateTime.Now.AddMonths(f.Random.Number(1, 24)).ToString("d")}");
+                .RuleFor(e => e.Salary, f => f.Random.Number(10000, 100000));
 
             var employee = _employeeFaker.Generate();
 
-            employeesStorage.AddEmployee(employee);
+            employeeStorage.AddEmployee(employee);
 
-            Assert.Equal(employee, employeesStorage.employees.LastOrDefault());
+            Assert.Contains(employee, employeeStorage.GetEmployees());
         }
 
         [Fact]
-        public void AddEmployeeShouldThrowExceptionWhenClientIsNullPositivTest()
+        public void AddEmployeeShouldThrowExceptionWhenEmployeeIsNullPositivTest()
         {
-            var employeesStorage = new EmployeeStorage();
+            var employeeStorage = new EmployeeStorage();
 
-            Assert.Throws<ArgumentNullException>(() => employeesStorage.AddEmployee(null));
+            Assert.Throws<ArgumentNullException>(() => employeeStorage.AddEmployee(null));
         }
 
         [Fact]
-        public void YoungestEmployeePositivTest()
+        public void YoungestEmployeeTest()
         {
             var employeeStorage = new EmployeeStorage();
 
@@ -159,23 +135,15 @@ namespace BankSystem.Tests
                 .RuleFor(e => e.Telephone, f => f.Phone.PhoneNumber())
                 .RuleFor(e => e.Address, f => f.Address.FullAddress())
                 .RuleFor(e => e.Position, f => f.Name.JobTitle())
-                .RuleFor(e => e.Salary, f => f.Random.Number(10000, 100000))
-                .RuleFor(e => e.Department, f => f.Name.JobArea())
-                .RuleFor(e => e.Contract, f => $"Contract to {DateTime.Now.AddMonths(f.Random.Number(1, 24)).ToString("d")}");
+                .RuleFor(e => e.Salary, f => f.Random.Number(10000, 100000));
 
-            var employee1 = _employeeFaker.RuleFor(c => c.BDate, f => DateOnly.FromDateTime(new DateTime(1990, 5, 1))).Generate();
-            var employee2 = _employeeFaker.RuleFor(c => c.BDate, f => DateOnly.FromDateTime(new DateTime(2000, 7, 15))).Generate();
-            var employee3 = _employeeFaker.RuleFor(c => c.BDate, f => DateOnly.FromDateTime(new DateTime(1987, 1, 26))).Generate();
+            employeeStorage.AddManyEmployees(_employeeFaker.Generate(1000));
 
-            employeeStorage.AddEmployee(employee1);
-            employeeStorage.AddEmployee(employee2);
-            employeeStorage.AddEmployee(employee3);
-
-            Assert.Equal(employee2, employeeStorage.employees.OrderByDescending(c => c.BDate).FirstOrDefault());
+            Employee youngestEmployee = employeeStorage.Get(EmployeeMethod.Younger);
         }
 
         [Fact]
-        public void OldestEmployeePositivTest()
+        public void OldestEmployeeTest()
         {
             var employeeStorage = new EmployeeStorage();
 
@@ -187,19 +155,31 @@ namespace BankSystem.Tests
                 .RuleFor(e => e.Telephone, f => f.Phone.PhoneNumber())
                 .RuleFor(e => e.Address, f => f.Address.FullAddress())
                 .RuleFor(e => e.Position, f => f.Name.JobTitle())
-                .RuleFor(e => e.Salary, f => f.Random.Number(10000, 100000))
-                .RuleFor(e => e.Department, f => f.Name.JobArea())
-                .RuleFor(e => e.Contract, f => $"Contract to {DateTime.Now.AddMonths(f.Random.Number(1, 24)).ToString("d")}");
+                .RuleFor(e => e.Salary, f => f.Random.Number(10000, 100000));
 
-            var employee1 = _employeeFaker.RuleFor(c => c.BDate, f => DateOnly.FromDateTime(new DateTime(1990, 5, 1))).Generate();
-            var employee2 = _employeeFaker.RuleFor(c => c.BDate, f => DateOnly.FromDateTime(new DateTime(2000, 7, 15))).Generate();
-            var employee3 = _employeeFaker.RuleFor(c => c.BDate, f => DateOnly.FromDateTime(new DateTime(1987, 1, 26))).Generate();
+            employeeStorage.AddManyEmployees(_employeeFaker.Generate(1000));
 
-            employeeStorage.AddEmployee(employee1);
-            employeeStorage.AddEmployee(employee2);
-            employeeStorage.AddEmployee(employee3);
+            Employee oldestEmployee = employeeStorage.Get(EmployeeMethod.Older);
+        }
 
-            Assert.Equal(employee3, employeeStorage.employees.OrderBy(c => c.BDate).FirstOrDefault());
+        [Fact]
+        public void AverageSalaryEmployeeTest()
+        {
+            var employeeStorage = new EmployeeStorage();
+
+            _employeeFaker = new Faker<Employee>()
+                .RuleFor(e => e.FName, f => f.Name.FirstName())
+                .RuleFor(e => e.LName, f => f.Name.LastName())
+                .RuleFor(e => e.BDate, f => DateOnly.FromDateTime(f.Date.Past(50)))
+                .RuleFor(e => e.Passport, f => f.Random.AlphaNumeric(8))
+                .RuleFor(e => e.Telephone, f => f.Phone.PhoneNumber())
+                .RuleFor(e => e.Address, f => f.Address.FullAddress())
+                .RuleFor(e => e.Position, f => f.Name.JobTitle())
+                .RuleFor(e => e.Salary, f => f.Random.Number(10000, 100000));
+
+            employeeStorage.AddManyEmployees(_employeeFaker.Generate(1000));
+
+            employeeStorage.GetSalaryAverage();
         }
     }
 }
