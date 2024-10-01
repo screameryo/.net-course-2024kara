@@ -179,7 +179,7 @@ namespace BankSystem.Tests
 
             employeeStorage.AddManyEmployees(_employeeFaker.Generate(1000));
 
-            employeeStorage.GetSalaryAverage();
+            employeeStorage.GetAgeAverage();
         }
     }
 }
