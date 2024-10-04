@@ -10,31 +10,16 @@ namespace BankSystem.Data.Storages
     }
     public class EmployeeStorage
     {
-        public List<Employee> employees = new List<Employee>();
+        private Dictionary<Employee, Dictionary<string, Account>> _employees = new Dictionary<Employee, Dictionary<string, Account>>();
 
-        public void AddEmployee(Employee newEmployee)
+        public void AddEmployee(Employee newEmployee, Dictionary<string, Account> newAccount)
         {
-            if (newEmployee == null)
-            {
-                throw new ArgumentNullException(nameof(newEmployee), "Сотрудник не может быть null.");
-            }
-
-            employees.Add(newEmployee);
+            _employees.Add(newEmployee, newAccount);
         }
 
-        public void AddManyEmployees(List<Employee> newEmployees)
+        public Dictionary<Employee, Dictionary<string, Account>> GetEmployees()
         {
-            if (newEmployees == null)
-            {
-                throw new ArgumentNullException(nameof(newEmployees), "Список сотрудников не может быть null.");
-            }
-
-            employees.AddRange(newEmployees);
-        }
-
-        public List<Employee> GetEmployees()
-        {
-            return employees;
+            return _employees;
         }
 
         public Employee Get(EmployeeMethod method)
@@ -42,11 +27,11 @@ namespace BankSystem.Data.Storages
             switch (method)
             {
                 case EmployeeMethod.Younger:
-                    return employees.OrderBy(e => e.BDate).First();
+                    return _employees.Keys.OrderBy(c => c.BDate).First();
                 case EmployeeMethod.Older:
-                    return employees.OrderByDescending(e => e.BDate).First();
+                    return _employees.Keys.OrderByDescending(c => c.BDate).First();
                 case EmployeeMethod.Last:
-                    return employees.Last();
+                    return _employees.Keys.Last();
                 default:
                     throw new InvalidOperationException("Неверный метод.");
             }
@@ -54,7 +39,22 @@ namespace BankSystem.Data.Storages
 
         public int GetAgeAverage()
         {
-            return (int)employees.Average(e => DateTime.Now.Year - e.BDate.Year);
+            return (int)_employees.Keys.Average(c => DateTime.Now.Year - c.BDate.Year);
+        }
+
+        public void AddAccountToEmployee(Employee employee, Account account)
+        {
+            _employees[employee].Add(account.AccountNumber, account);
+        }
+
+        public void RemoveAccountFromEmployee(Employee employee, Account account)
+        {
+            _employees[employee].Remove(account.AccountNumber);
+        }
+
+        public void UpdateAccount(Employee employee, Account account, int newAmount)
+        {
+            account.Amount = (int)newAmount;
         }
     }
 }

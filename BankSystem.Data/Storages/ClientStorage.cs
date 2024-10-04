@@ -11,29 +11,14 @@ namespace BankSystem.Data.Storages
 
     public class ClientStorage
     {
-        private List<Client> _clients = new List<Client>();
+        private Dictionary<Client, Dictionary<string, Account>> _clients = new Dictionary<Client, Dictionary<string, Account>>();
 
-        public void AddClient(Client newClient)
+        public void AddClient(Client newClient, Dictionary<string, Account> newAccount)
         {
-            if (newClient == null)
-            {
-                throw new ArgumentNullException(nameof(newClient), "Клиент не может быть null.");
-            }
-
-            _clients.Add(newClient);
+            _clients.Add(newClient, newAccount);
         }
 
-        public void AddManyClients(List<Client> newClients)
-        {
-            if (newClients == null)
-            {
-                throw new ArgumentNullException(nameof(newClients), "Список клиентов не может быть null.");
-            }
-
-            _clients.AddRange(newClients);
-        }
-
-        public List<Client> GetClients()
+        public Dictionary<Client, Dictionary<string, Account>> GetClients()
         {
             return _clients;
         }
@@ -43,11 +28,11 @@ namespace BankSystem.Data.Storages
             switch (method)
             {
                 case ClientMethod.Younger:
-                    return _clients.OrderBy(c => c.BDate).First();
+                    return _clients.Keys.OrderBy(c => c.BDate).First();
                 case ClientMethod.Older:
-                    return _clients.OrderByDescending(c => c.BDate).First();
+                    return _clients.Keys.OrderByDescending(c => c.BDate).First();
                 case ClientMethod.Last:
-                    return _clients.Last();
+                    return _clients.Keys.Last();
                 default:
                     throw new InvalidOperationException("Неверный метод.");
             }
@@ -55,7 +40,22 @@ namespace BankSystem.Data.Storages
 
         public int GetAgeAverage()
         {
-            return (int)_clients.Average(c => DateTime.Now.Year - c.BDate.Year);
+            return (int)_clients.Keys.Average(c => DateTime.Now.Year - c.BDate.Year);
+        }
+
+        public void AddAccountToClient(Client client, Account account)
+        {
+            _clients[client].Add(account.AccountNumber, account);
+        }
+
+        public void RemoveAccountFromClient(Client client, Account account)
+        {
+            _clients[client].Remove(account.AccountNumber);
+        }
+
+        public void UpdateAccount(Client client, Account account, int newAmount)
+        {
+            account.Amount = (int)newAmount;
         }
     }
 }

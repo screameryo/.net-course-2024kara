@@ -22,10 +22,11 @@
                 && LName == e.LName 
                 && MName == e.MName 
                 && BDate == e.BDate 
-                && Passport == e.Passport 
+                && PassportNumber == e.PassportNumber
+                && PassportSeries == e.PassportSeries
                 && Telephone == e.Telephone 
                 && Address == e.Address 
-                && Position == e.Position 
+                && Position == e.Position
                 && Salary == e.Salary 
                 && Department == e.Department
                 && Contract == e.Contract;
@@ -33,7 +34,17 @@
 
         public override int GetHashCode()
         {
-            return FName.GetHashCode() + LName.GetHashCode() + BDate.GetHashCode() + Passport.GetHashCode() + Telephone.GetHashCode() + Address.GetHashCode() + Position.GetHashCode() + Salary.GetHashCode() + Department.GetHashCode() + Contract.GetHashCode();
+            return FName.GetHashCode() 
+                + LName.GetHashCode() 
+                + BDate.GetHashCode() 
+                + PassportNumber.GetHashCode() 
+                + PassportSeries.GetHashCode() 
+                + Telephone.GetHashCode() 
+                + Address.GetHashCode() 
+                + Position.GetHashCode() 
+                + Salary.GetHashCode() 
+                + Department.GetHashCode() 
+                + Contract.GetHashCode();
         }
     }
 }

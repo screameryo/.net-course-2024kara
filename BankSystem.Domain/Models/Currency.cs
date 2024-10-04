@@ -4,9 +4,7 @@
     {
         public string Name { get; set; }
 
-        public string Code { get; set; }
-
-        public int NumCode { get; set; }
+        public string NumCode { get; set; }
 
         public string Symbol { get; set; }
     }
