@@ -1,128 +1,89 @@
 ﻿using BankSystem.App.Exceptions;
 using BankSystem.Data.Storages;
 using BankSystem.Domain.Models;
-using System.Linq.Expressions;
+using System.ComponentModel.DataAnnotations;
 
 namespace BankSystem.App.Services
 {
     public class EmployeeService
     {
         private readonly EmployeeStorage _employeeStorage;
-        private readonly string KUBBank = "66";
 
         public EmployeeService(EmployeeStorage employeeStorage)
         {
-            _employeeStorage = employeeStorage;
+            _employeeStorage = employeeStorage ?? throw new ArgumentNullException(nameof(employeeStorage), "Хранилище сотрудников не может быть null.");
         }
 
-        public void AddEmployees(Employee newEmployee)
+        public void AddEmployee(Employee newEmployee)
         {
-            if (_employeeStorage.GetEmployees().ContainsKey(newEmployee))
-            {
-                throw new ClientDataExceptions(ClientDataExceptions.ClientAlreadyExistsMessage);
-            }
-
-            Account newAccount = CreateAccountFornewEmployee();
+            Account newAccount = CreateAccount();
 
             if (ValidateEmployee(newEmployee))
             {
-                _employeeStorage.AddEmployee(newEmployee, new Dictionary<string, Account> { { newAccount.AccountNumber, newAccount } });
+                _employeeStorage.AddEmployee(newEmployee, new List<Account> { { newAccount } });
             }
         }
 
-        public void AddAccountToExistingClient(Employee employee, Account account)
+        public void AddAdditionalAccount(Employee employee, Account account)
         {
             if (ValidateEmployee(employee))
             {
-                AddAccountToEmployee(employee, account);
-            }
-        }
+                if (employee is null)
+                {
+                    throw new ArgumentNullException(nameof(employee), "Сотрудник не может быть null.");
+                }
 
-        public void AddAccountToEmployee(Employee employee, Account account)
-        {
-            if (employee == null)
-            {
-                throw new ArgumentNullException(nameof(employee), "Сотрудник не может быть null.");
-            }
+                if (account is null)
+                {
+                    throw new ArgumentNullException(nameof(account), "Лицевой счет не может быть null.");
+                }
 
-            if (account == null)
-            {
-                throw new ArgumentNullException(nameof(account), "Лицевой счет не может быть null.");
-            }
-
-            if (_employeeStorage.GetEmployees().ContainsKey(employee))
-            {
                 _employeeStorage.AddAccountToEmployee(employee, account);
             }
-            else
-            {
-                throw new EmployeeDataExceptions(EmployeeDataExceptions.NoEmployeeMessage);
-            }
-        }
+        }        
 
-        private bool ValidateEmployee(Employee client)
+        private bool ValidateEmployee(Employee employee)
         {
-            var today = DateOnly.FromDateTime(DateTime.Today);
-            var age = today.Year - client.BDate.Year;
+            var validationResults = new List<ValidationResult>();
+            if (!Validator.TryValidateObject(employee, new ValidationContext(employee), validationResults, true))
+            {
+                throw new EmployeeDataException($"Неверные данные сотрудника {validationResults.Select(r => r.ErrorMessage).Aggregate((a, b) => $"{a}{Environment.NewLine}{b}")}");
+            }
 
-            if (client.BDate > today.AddYears(-age))
+            var today = DateOnly.FromDateTime(DateTime.Today);
+            var age = today.Year - employee.BDate.Year;
+
+            if (employee.BDate > today.AddYears(-age))
             {
                 age--;
             }
 
             if (age < 18)
             {
-                throw new ClientDataExceptions(ClientDataExceptions.UnderageClientMessage);
+                throw new EmployeeDataException("Сотрудник должен быть старше 18 лет.");
             }
 
-            if (client.PassportNumber is null || client.PassportSeries is null)
+            if (employee.PassportNumber is null || employee.PassportSeries is null)
             {
-                throw new ClientDataExceptions(ClientDataExceptions.NoPassportDataMessage);
+                throw new EmployeeDataException("У сотрудника отсутствуют паспортные данные.");
             }
 
-            if (string.IsNullOrEmpty(client.PassportNumber.Trim()) || string.IsNullOrEmpty(client.PassportSeries.Trim()))
+            if (string.IsNullOrEmpty(employee.PassportNumber.Trim()) || string.IsNullOrEmpty(employee.PassportSeries.Trim()))
             {
-                throw new ClientDataExceptions(ClientDataExceptions.NoPassportDataMessage);
+                throw new EmployeeDataException("У сотрудника отсутствуют паспортные данные.");
             }
 
             return true;
         }
 
-        private Account CreateAccountFornewEmployee()
-        {
-            Currency currency = new Currency { Name = "US Dollar", NumCode = "840", Symbol = "$" };
-            var account = new Account
-            {
-                Cur = currency,
-                Amount = 0,
-                AccountNumber = $"2224{currency.NumCode}{KUBBank}{GenerateUniqueRandomAcc(currency.NumCode)}"
-            };
-
-            return account;
-        }
-
-        private string GenerateUniqueRandomAcc(string numcode)
+        private Account CreateAccount()
         {
             Random random = new Random();
-            int randomNumber = random.Next(0, 10000000);
-            var employees = _employeeStorage.GetEmployees();
-
-            while (employees.Values.Any(c => c.Keys.Any(a => a.Substring(6) == $"{numcode}{randomNumber}")))
-            {
-                randomNumber = random.Next(0, 10000000);
-            }
-
-            return randomNumber.ToString("D7");
-        }
-
-        public Account CreateAccountForExistingClient(string numcode)
-        {
-            Currency currency = new Currency { Name = "US Dollar", NumCode = numcode, Symbol = "$" };
             var account = new Account
             {
-                Cur = currency,
+                Cur = new Currency { Name = "US Dollar", NumCode = "840", Symbol = "$" },
                 Amount = 0,
-                AccountNumber = $"2224{currency.NumCode}{KUBBank}{GenerateUniqueRandomAcc(currency.NumCode)}"
+                AccountNumber = $"222484066{random.Next(0, 10000000).ToString("D7")}"
             };
 
             return account;
@@ -130,53 +91,34 @@ namespace BankSystem.App.Services
 
         public void UpdateAccount(Employee employee, Account account, int newAmount)
         {
-            if (employee == null)
+            if (employee is null)
             {
                 throw new ArgumentNullException(nameof(employee), "Сотрудник не может быть null.");
             }
 
-            if (account == null)
+            if (account is null)
             {
                 throw new ArgumentNullException(nameof(account), "Лицевой счет не может быть null.");
             }
 
             if (newAmount < 0)
             {
-                throw new AccountDataExceptions(AccountDataExceptions.AccountBalanceLessThanZeroMessage);
+                throw new AccountDataException("Сумма на лицевом счете меньше 0.");
             }
 
-            if (_employeeStorage.GetEmployees().ContainsKey(employee))
+            if (_employeeStorage.ContainsEmployee(employee))
             {
                 _employeeStorage.UpdateAccount(employee, account, newAmount);
             }
             else
             {
-                throw new ClientDataExceptions(ClientDataExceptions.NoClientMessage);
+                throw new ClientDataException("Сотрудник не найден.");
             }
         }
 
-        public Dictionary<Employee, Dictionary<string, Account>> GetEmployees(string fio = "", string phone = "", string passportSeris = "", string passportNumber = "", DateOnly? dateFrom = null, DateOnly? dateTo = null)
+        public Dictionary<Employee, List<Account>> SearchEmployee(string fio = "", string phone = "", string passport = "", DateOnly? dateFrom = null, DateOnly? dateTo = null)
         {
-            var employees = _employeeStorage.GetEmployees();
-
-            if (string.IsNullOrEmpty(fio) 
-                && string.IsNullOrEmpty(phone) 
-                && string.IsNullOrEmpty(passportSeris) 
-                && string.IsNullOrEmpty(passportNumber)
-                && dateFrom == null && dateTo == null)
-            {
-                return employees;
-            }
-
-            Expression<Func<Employee, bool>> filter = c =>
-                (string.IsNullOrEmpty(fio) || c.GetFullName().Contains(fio)) &&
-                (string.IsNullOrEmpty(phone) || c.Telephone.Contains(phone)) &&
-                (string.IsNullOrEmpty(passportSeris) || c.PassportSeries.Contains(passportSeris)) &&
-                (string.IsNullOrEmpty(passportNumber) || c.PassportNumber.Contains(passportNumber)) &&
-                (!dateFrom.HasValue || c.BDate >= dateFrom) &&
-                (!dateTo.HasValue || c.BDate <= dateTo);
-
-            return employees.Where(c => filter.Compile()(c.Key)).ToDictionary(c => c.Key, c => c.Value);
+            return _employeeStorage.SearchEmployee(fio, phone, passport, dateFrom, dateTo);
         }
     }
 }

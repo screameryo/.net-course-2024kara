@@ -33,9 +33,7 @@ namespace BankSystem.Tests
             var client = _clientFaker.Generate();
             var account = _accountFaker.Generate();
 
-            clientStorage.AddClient(client, new Dictionary<string, Account> { { account.AccountNumber, account } });
-
-            Assert.Contains(client, clientStorage.GetClients());
+            clientStorage.AddClient(client, new List<Account> { { account } });
         }
 
         [Fact]
@@ -60,7 +58,7 @@ namespace BankSystem.Tests
             for (int i = 0; i < 1000; i++)
             {
                 var account = _accountFaker.Generate();
-                clientStorage.AddClient(_clientFaker.Generate(), new Dictionary<string, Account> { { account.AccountNumber, account } });
+                clientStorage.AddClient(_clientFaker.Generate(), new List<Account> { { account } });
             }
 
             Client youngestClient = clientStorage.Get(ClientMethod.Younger);
@@ -88,7 +86,7 @@ namespace BankSystem.Tests
             for (int i = 0; i < 1000; i++)
             {
                 var account = _accountFaker.Generate();
-                clientStorage.AddClient(_clientFaker.Generate(), new Dictionary<string, Account> { { account.AccountNumber, account } });
+                clientStorage.AddClient(_clientFaker.Generate(), new List<Account> { { account } });
             }
 
             Client oldestClient = clientStorage.Get(ClientMethod.Older);
@@ -116,7 +114,7 @@ namespace BankSystem.Tests
             for (int i = 0; i < 1000; i++)
             {
                 var account = _accountFaker.Generate();
-                clientStorage.AddClient(_clientFaker.Generate(), new Dictionary<string, Account> { { account.AccountNumber, account } });
+                clientStorage.AddClient(_clientFaker.Generate(), new List<Account> { { account } });
             }
 
             clientStorage.GetAgeAverage();
@@ -148,9 +146,9 @@ namespace BankSystem.Tests
             var employee = _employeeFaker.Generate();
             var account = _accountFaker.Generate();
 
-            employeeStorage.AddEmployee(employee, new Dictionary<string, Account> { { account.AccountNumber, account } });
+            employeeStorage.AddEmployee(employee, new List<Account> { { account } });
 
-            Assert.Contains(employee, employeeStorage.GetEmployees());
+            Assert.True(employeeStorage.ContainsEmployee(employee));
         }
 
         [Fact]
@@ -179,7 +177,7 @@ namespace BankSystem.Tests
             for (int i = 0; i < 1000; i++)
             {
                 var account = _accountFaker.Generate();
-                employeeStorage.AddEmployee(_employeeFaker.Generate(), new Dictionary<string, Account> { { account.AccountNumber, account } });
+                employeeStorage.AddEmployee(_employeeFaker.Generate(), new List<Account> { { account } });
             }
 
             Employee youngestEmployee = employeeStorage.Get(EmployeeMethod.Younger);
@@ -211,7 +209,7 @@ namespace BankSystem.Tests
             for (int i = 0; i < 1000; i++)
             {
                 var account = _accountFaker.Generate();
-                employeeStorage.AddEmployee(_employeeFaker.Generate(), new Dictionary<string, Account> { { account.AccountNumber, account } });
+                employeeStorage.AddEmployee(_employeeFaker.Generate(), new List<Account> { { account } });
             }
 
             Employee oldestEmployee = employeeStorage.Get(EmployeeMethod.Older);
@@ -243,7 +241,7 @@ namespace BankSystem.Tests
             for (int i = 0; i < 1000; i++)
             {
                 var account = _accountFaker.Generate();
-                employeeStorage.AddEmployee(_employeeFaker.Generate(), new Dictionary<string, Account> { { account.AccountNumber, account } });
+                employeeStorage.AddEmployee(_employeeFaker.Generate(), new List<Account> { { account } });
             }
 
             employeeStorage.GetAgeAverage();
