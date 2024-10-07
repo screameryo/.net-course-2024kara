@@ -22,15 +22,15 @@ namespace Practice
 
         private static void ChangeCurrency(ref Currency currency)
         {
-            currency.NumCode = 840;
+            currency.NumCode = "840";
         }
 
         private static void PracticeOneRefValType()
         {
-            var person = new Person() { FName = "John", LName = "Doe", BDate = new DateOnly(2020, 1, 1), Passport = "PMR56564", Telephone = "77712345", Address = "str. 1" };
+            var person = new Person() { FName = "John", LName = "Doe", BDate = new DateOnly(2020, 1, 1), PassportNumber = "56564", PassportSeries = "AA", Telephone = "77712345", Address = "str. 1" };
             Console.WriteLine($"Creating a person object {person.FName} {person.LName}{Environment.NewLine}");
 
-            var employee = new Employee() { FName = "John", LName = "Doe", Address = "str. 1", BDate = new DateOnly(2020, 1, 1), Passport = "PMR56564", Telephone = "77712345" };
+            var employee = new Employee() { FName = "John", LName = "Doe", Address = "str. 1", BDate = new DateOnly(2020, 1, 1), PassportNumber = "56564", PassportSeries = "AA", Telephone = "77712345" };
             employee.Position = "Backend";
             employee.Salary = 100000;
             employee.Department = "Develop";
@@ -44,14 +44,13 @@ namespace Practice
 
             var currency = new Currency();//840
             currency.Name = "US Dollar";
-            currency.Code = "USD";
             currency.Symbol = "$";
-            currency.NumCode = 830;
-            Console.WriteLine($"Creating a currency object {currency.Name} with Code: {currency.Code} Symbol: {currency.Symbol} NumCode: {currency.NumCode}{Environment.NewLine}");
+            currency.NumCode = "830";
+            Console.WriteLine($"Creating a currency object {currency.Name} with Code: {currency.NumCode} Symbol: {currency.Symbol} NumCode: {currency.NumCode}{Environment.NewLine}");
 
             ChangeCurrency(ref currency);
             Console.WriteLine($"Changing the NumCode of the currency to {currency.NumCode}{Environment.NewLine}");
-            Console.WriteLine($"Object currency is {currency.Name} with Code: {currency.Code} Symbol: {currency.Symbol} NumCode: {currency.NumCode}{Environment.NewLine}");
+            Console.WriteLine($"Object currency is {currency.Name} with Code: {currency.NumCode} Symbol: {currency.Symbol} NumCode: {currency.NumCode}{Environment.NewLine}");
 
             List<Employee> employees = new List<Employee>
             {
@@ -64,7 +63,7 @@ namespace Practice
             var ownerSalary = bankService.CalculateOwnerSalary(1000000, 500000, employees);
             Console.WriteLine($"Owner salary is {ownerSalary}{Environment.NewLine}");
 
-            var client = new Client() { FName = "John", LName = "Doe", BDate = new DateOnly(2020, 1, 1), Passport = "PMR56564", Address = "str. 1", Telephone = "123456789" };
+            var client = new Client() { FName = "John", LName = "Doe", BDate = new DateOnly(2020, 1, 1), PassportSeries = "AA", PassportNumber = "14124", Address = "str. 1", Telephone = "123456789" };
             Console.WriteLine($"Creating a client object {client.FName} {client.LName}{Environment.NewLine}");
             var newemployee = bankService.ConvertClientToEmployee(client, "Backend", "Develop", 100000);
             Console.WriteLine($"Client now is jbject employee {Environment.NewLine}");

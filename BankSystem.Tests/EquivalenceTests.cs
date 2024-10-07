@@ -20,7 +20,8 @@ namespace BankSystem.Tests
                 LName = clientDictionary.Keys.ElementAt(rand).LName,
                 MName = clientDictionary.Keys.ElementAt(rand).MName,
                 BDate = clientDictionary.Keys.ElementAt(rand).BDate,
-                Passport = clientDictionary.Keys.ElementAt(rand).Passport,
+                PassportNumber = clientDictionary.Keys.ElementAt(rand).PassportNumber,
+                PassportSeries = clientDictionary.Keys.ElementAt(rand).PassportSeries,
                 Telephone = clientDictionary.Keys.ElementAt(rand).Telephone,
                 Address = clientDictionary.Keys.ElementAt(rand).Address
             };
@@ -33,7 +34,7 @@ namespace BankSystem.Tests
         {
             TestDataGenerator generator = new TestDataGenerator();
 
-            Dictionary<Client, List<Account>> clientDictionary = generator.GenerateDictionaryClientsAndManyAccounts();
+            Dictionary<Client, Dictionary<string, Account>> clientDictionary = generator.GenerateDictionaryClientsAndManyAccounts();
 
             int rand = new Random().Next(0, 100);
             Client newclient = new Client()
@@ -42,7 +43,8 @@ namespace BankSystem.Tests
                 LName = clientDictionary.Keys.ElementAt(rand).LName,
                 MName = clientDictionary.Keys.ElementAt(rand).MName,
                 BDate = clientDictionary.Keys.ElementAt(rand).BDate,
-                Passport = clientDictionary.Keys.ElementAt(rand).Passport,
+                PassportNumber = clientDictionary.Keys.ElementAt(rand).PassportNumber,
+                PassportSeries = clientDictionary.Keys.ElementAt(rand).PassportSeries,
                 Telephone = clientDictionary.Keys.ElementAt(rand).Telephone,
                 Address = clientDictionary.Keys.ElementAt(rand).Address
             };
@@ -60,7 +62,7 @@ namespace BankSystem.Tests
             int rand = new Random().Next(0, 100);
             Account newAccount = new Account()
             {
-                Currency = clientDictionary.Values.ElementAt(rand).Currency,
+                Cur = clientDictionary.Values.ElementAt(rand).Cur,
                 Amount = clientDictionary.Values.ElementAt(rand).Amount
             };
 
@@ -72,18 +74,26 @@ namespace BankSystem.Tests
         {
             TestDataGenerator generator = new TestDataGenerator();
 
-            Dictionary<Client, List<Account>> clientDictionary = generator.GenerateDictionaryClientsAndManyAccounts();
+            Dictionary<Client, Dictionary<string, Account>> clientDictionary = generator.GenerateDictionaryClientsAndManyAccounts();
 
             int rand = new Random().Next(0, 100);
 
-            List<Account> newAccounts = new List<Account>();
+            Dictionary<string, Account> newAccounts = new Dictionary<string, Account>();
             foreach (var account in clientDictionary.Values.ElementAt(rand))
             {
-                newAccounts.Add(new Account()
-                {
-                    Currency = account.Currency,
-                    Amount = account.Amount
-                });
+                newAccounts.Add(account.Key,
+                    new Account()
+                    {
+                        Cur = new Currency()
+                        {
+                            Name = account.Value.Cur.Name,
+                            NumCode = account.Value.Cur.NumCode,
+                            Symbol = account.Value.Cur.Symbol
+                        },
+                        Amount = account.Value.Amount,
+                        AccountNumber = account.Value.AccountNumber
+                    }
+                    );
             }
 
             Assert.Equal(clientDictionary.Values.ElementAt(rand), newAccounts);
@@ -104,7 +114,8 @@ namespace BankSystem.Tests
                 LName = employees[rand].LName,
                 MName = employees[rand].MName,
                 BDate = employees[rand].BDate,
-                Passport = employees[rand].Passport,
+                PassportNumber = employees[rand].PassportNumber,
+                PassportSeries = employees[rand].PassportSeries,
                 Telephone = employees[rand].Telephone,
                 Address = employees[rand].Address,
                 Position = employees[rand].Position,
@@ -130,14 +141,15 @@ namespace BankSystem.Tests
                 LName = clientDictionary.Keys.ElementAt(rand).LName,
                 MName = clientDictionary.Keys.ElementAt(rand).MName,
                 BDate = clientDictionary.Keys.ElementAt(rand).BDate,
-                Passport = clientDictionary.Keys.ElementAt(rand).Passport,
+                PassportNumber = clientDictionary.Keys.ElementAt(rand).PassportNumber,
+                PassportSeries = clientDictionary.Keys.ElementAt(rand).PassportSeries,
                 Telephone = clientDictionary.Keys.ElementAt(rand).Telephone,
                 Address = clientDictionary.Keys.ElementAt(rand).Address
             };
 
             Account newAccount = new Account()
             {
-                Currency = clientDictionary[newclient].Currency,
+                Cur = clientDictionary[newclient].Cur,
                 Amount = clientDictionary[newclient].Amount
             };
 
@@ -149,7 +161,7 @@ namespace BankSystem.Tests
         {
             TestDataGenerator generator = new TestDataGenerator();
 
-            Dictionary<Client, List<Account>> clientDictionary = generator.GenerateDictionaryClientsAndManyAccounts();
+            Dictionary<Client, Dictionary<string, Account>> clientDictionary = generator.GenerateDictionaryClientsAndManyAccounts();
 
             int rand = new Random().Next(0, 100);
             Client newclient = new Client()
@@ -158,19 +170,27 @@ namespace BankSystem.Tests
                 LName = clientDictionary.Keys.ElementAt(rand).LName,
                 MName = clientDictionary.Keys.ElementAt(rand).MName,
                 BDate = clientDictionary.Keys.ElementAt(rand).BDate,
-                Passport = clientDictionary.Keys.ElementAt(rand).Passport,
+                PassportNumber = clientDictionary.Keys.ElementAt(rand).PassportNumber,
+                PassportSeries = clientDictionary.Keys.ElementAt(rand).PassportSeries,
                 Telephone = clientDictionary.Keys.ElementAt(rand).Telephone,
                 Address = clientDictionary.Keys.ElementAt(rand).Address
             };
 
-            List<Account> newAccounts = new List<Account>();
+            Dictionary<string, Account> newAccounts = new Dictionary<string, Account>();
             foreach (var account in clientDictionary[newclient])
             {
-                newAccounts.Add(new Account()
-                {
-                    Currency = account.Currency,
-                    Amount = account.Amount
-                });
+                newAccounts.Add(account.Key,
+                    new Account()
+                    {
+                        Cur = new Currency()
+                        {
+                            Name = account.Value.Cur.Name,
+                            NumCode = account.Value.Cur.NumCode,
+                            Symbol = account.Value.Cur.Symbol
+                        },
+                        Amount = account.Value.Amount,
+                        AccountNumber = account.Value.AccountNumber
+                    });
             }
 
             Assert.Equal(clientDictionary[newclient], newAccounts);

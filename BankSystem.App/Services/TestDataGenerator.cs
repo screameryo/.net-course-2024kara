@@ -11,7 +11,8 @@ namespace BankSystem.App.Services
                 .RuleFor(e => e.FName, f => f.Name.FirstName())
                 .RuleFor(e => e.LName, f => f.Name.LastName())
                 .RuleFor(e => e.BDate, f => DateOnly.FromDateTime(f.Date.Past(50)))
-                .RuleFor(e => e.Passport, f => f.Random.AlphaNumeric(8))
+                .RuleFor(e => e.PassportSeries, f => f.Random.AlphaNumeric(2))
+                .RuleFor(e => e.PassportNumber, f => f.Random.AlphaNumeric(8))
                 .RuleFor(e => e.Telephone, f => f.Phone.PhoneNumber())
                 .RuleFor(e => e.Address, f => f.Address.FullAddress())
                 .RuleFor(e => e.Position, f => f.Name.JobTitle())
@@ -28,7 +29,8 @@ namespace BankSystem.App.Services
                 .RuleFor(c => c.FName, f => f.Name.FirstName())
                 .RuleFor(c => c.LName, f => f.Name.LastName())
                 .RuleFor(c => c.BDate, f => DateOnly.FromDateTime(f.Date.Past(50)))
-                .RuleFor(c => c.Passport, f => f.Random.AlphaNumeric(8))
+                .RuleFor(c => c.PassportSeries, f => f.Random.AlphaNumeric(2))
+                .RuleFor(c => c.PassportNumber, f => f.Random.AlphaNumeric(8))
                 .RuleFor(c => c.Telephone, f => f.Phone.PhoneNumber())
                 .RuleFor(c => c.Address, f => f.Address.FullAddress());
 
@@ -41,37 +43,46 @@ namespace BankSystem.App.Services
                 .RuleFor(c => c.FName, f => f.Name.FirstName())
                 .RuleFor(c => c.LName, f => f.Name.LastName())
                 .RuleFor(c => c.BDate, f => DateOnly.FromDateTime(f.Date.Past(50)))
-                .RuleFor(c => c.Passport, f => f.Random.AlphaNumeric(8))
+                .RuleFor(c => c.PassportSeries, f => f.Random.AlphaNumeric(2))
+                .RuleFor(c => c.PassportNumber, f => f.Random.AlphaNumeric(8))
                 .RuleFor(c => c.Telephone, f => f.Phone.PhoneNumber())
                 .RuleFor(c => c.Address, f => f.Address.FullAddress());
 
-            return faker.Generate(1000).ToDictionary(c => c.Passport);
+            return faker.Generate(1000).ToDictionary(c => c.PassportNumber + c.PassportSeries);
         }
 
-        public Dictionary<Client, List<Account>> GenerateDictionaryClientsAndManyAccounts()
+        public Dictionary<Client, Dictionary<string, Account>> GenerateDictionaryClientsAndManyAccounts()
         {
+            Dictionary<Client, Dictionary<string, Account>> accountdictionary = new Dictionary<Client, Dictionary<string, Account>>();
+
             var clientFaker = new Faker<Client>()
                 .RuleFor(p => p.FName, f => f.Name.FirstName())
                 .RuleFor(p => p.LName, f => f.Name.LastName())
                 .RuleFor(p => p.BDate, f => DateOnly.FromDateTime(f.Date.Past(50)))
-                .RuleFor(p => p.Passport, f => f.Random.AlphaNumeric(8))
+                .RuleFor(c => c.PassportSeries, f => f.Random.AlphaNumeric(2))
+                .RuleFor(c => c.PassportNumber, f => f.Random.AlphaNumeric(8))
                 .RuleFor(p => p.Telephone, f => f.Phone.PhoneNumber())
                 .RuleFor(p => p.Address, f => f.Address.FullAddress());
+            
+            var currencyFaker = new Faker<Currency>()
+                .RuleFor(p => p.Name, f => f.Finance.Currency().Description)
+                .RuleFor(p => p.NumCode, f => f.Finance.Currency().Code)
+                .RuleFor(p => p.Symbol, f => f.Finance.Currency().Symbol);
 
             var accountFaker = new Faker<Account>()
-                .RuleFor(p => p.Currency, f => f.Finance.Currency().Code)
-                .RuleFor(p => p.Amount, f => f.Random.Number(100, 10000));
+                .RuleFor(p => p.Cur, f => currencyFaker.Generate())
+                .RuleFor(p => p.Amount, f => f.Random.Number(100, 10000))
+                .RuleFor(p => p.AccountNumber, f => f.Random.AlphaNumeric(8));
 
-            Dictionary<Client, List<Account>> clientAccountsDictionary = new Dictionary<Client, List<Account>>();
+            Dictionary<Client, Dictionary<string, Account>> clientAccountsDictionary = new Dictionary<Client, Dictionary<string, Account>>();
 
             for (int i = 0; i < 100; i++)
             {
-                Client client = clientFaker.Generate();
-                List<Account> accountList = accountFaker.Generate(3);
-                clientAccountsDictionary.Add(client, accountList);
+                var account = accountFaker.Generate();
+                accountdictionary.Add(clientFaker.Generate(), new Dictionary<string, Account> { { account.AccountNumber, account } }); 
             }
 
-            return clientAccountsDictionary;
+            return accountdictionary;
         }
 
         public Dictionary<Client, Account> GenerateDictionaryClientsAndAccounts()
@@ -80,12 +91,18 @@ namespace BankSystem.App.Services
                 .RuleFor(p => p.FName, f => f.Name.FirstName())
                 .RuleFor(p => p.LName, f => f.Name.LastName())
                 .RuleFor(p => p.BDate, f => DateOnly.FromDateTime(f.Date.Past(50)))
-                .RuleFor(p => p.Passport, f => f.Random.AlphaNumeric(8))
+                .RuleFor(c => c.PassportSeries, f => f.Random.AlphaNumeric(2))
+                .RuleFor(c => c.PassportNumber, f => f.Random.AlphaNumeric(8))
                 .RuleFor(p => p.Telephone, f => f.Phone.PhoneNumber())
                 .RuleFor(p => p.Address, f => f.Address.FullAddress());
 
+            var currencyFaker = new Faker<Currency>()
+                .RuleFor(p => p.Name, f => f.Finance.Currency().Description)
+                .RuleFor(p => p.NumCode, f => f.Finance.Currency().Code)
+                .RuleFor(p => p.Symbol, f => f.Finance.Currency().Symbol);
+
             var accountFaker = new Faker<Account>()
-                .RuleFor(p => p.Currency, f => f.Finance.Currency().Code)
+                .RuleFor(p => p.Cur, f => currencyFaker.Generate())
                 .RuleFor(p => p.Amount, f => f.Random.Number(100, 10000));
 
             Dictionary<Client, Account> clientAccountsDictionary = new Dictionary<Client, Account>();

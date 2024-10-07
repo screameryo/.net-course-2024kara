@@ -10,12 +10,24 @@
             }
 
             Client c = (Client)obj;
-            return FName == c.FName && LName == c.LName && BDate == c.BDate && Passport == c.Passport && Telephone == c.Telephone && Address == c.Address;
+            return FName == c.FName 
+                && LName == c.LName 
+                && BDate == c.BDate 
+                && PassportNumber == c.PassportNumber 
+                && PassportSeries == c.PassportSeries
+                && Telephone == c.Telephone 
+                && Address == c.Address;
         }
 
         public override int GetHashCode()
         {
-            return FName.GetHashCode() + LName.GetHashCode() + BDate.GetHashCode() + Passport.GetHashCode() + Telephone.GetHashCode() + Address.GetHashCode();
+            return FName.GetHashCode() 
+                + LName.GetHashCode() 
+                + BDate.GetHashCode() 
+                + PassportNumber.GetHashCode() 
+                + PassportSeries.GetHashCode() 
+                + Telephone.GetHashCode() 
+                + Address.GetHashCode();
         }
     }
 }
