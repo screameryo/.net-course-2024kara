@@ -4,11 +4,12 @@ namespace BankSystem.App.Services
 {
     public class BankService
     {
+        private readonly List<Person> _blackList = new List<Person>();
+
         public double CalculateOwnerSalary(double profit, double expenses, List<Employee> employees)
         {
             double clearProfit = profit - expenses;
 
-            //Bank owner counts as an employee
             int ownerCount = employees.Count(x => x.Position == "Owner");
 
             if(ownerCount == 0)
@@ -36,6 +37,21 @@ namespace BankSystem.App.Services
                 Department = department,
                 Salary = salary
             };
+        }
+
+        public void AddBonus<T>(T person, string bonus) where T : Person
+        {
+            person.Bonuses.Add(bonus);
+        }
+
+        public void AddToBlackList<T>(T person) where T : Person
+        {
+            _blackList.Add(person);
+        }
+
+        public bool IsPersonInBlackList<T>(T person) where T : Person
+        {
+            return _blackList.Contains(person);
         }
     }
 }

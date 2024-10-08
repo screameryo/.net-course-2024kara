@@ -24,5 +24,7 @@
         {
             return $"{FName} {LName} {MName}";
         }
+
+        public List<string> Bonuses { get; set; }
     }
 }
