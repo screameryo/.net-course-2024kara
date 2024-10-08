@@ -8,7 +8,6 @@ namespace BankSystem.App.Interfaces
         void Update(T item);
         void Delete(T item);
         List<T> Get(
-            T item,
             Expression<Func<T, bool>> filter = null,
             Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
             int page = 1,

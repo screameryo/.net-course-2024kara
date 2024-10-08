@@ -6,7 +6,7 @@ namespace BankSystem.Tests
 {
     public class EquivalenceTests
     {
-        /*[Fact]
+        [Fact]
         public void GetHashCodeNecessityPositivTest()
         {
             TestDataGenerator generator = new TestDataGenerator();
@@ -63,7 +63,8 @@ namespace BankSystem.Tests
             Account newAccount = new Account()
             {
                 NameCur = clientDictionary.Values.ElementAt(rand).NameCur,
-                Amount = clientDictionary.Values.ElementAt(rand).Amount
+                Amount = clientDictionary.Values.ElementAt(rand).Amount,
+                AccountNumber = clientDictionary.Values.ElementAt(rand).AccountNumber
             };
 
             Assert.Equal(clientDictionary.Values.ElementAt(rand), newAccount);
@@ -145,7 +146,8 @@ namespace BankSystem.Tests
             Account newAccount = new Account()
             {
                 NameCur = clientDictionary[newclient].NameCur,
-                Amount = clientDictionary[newclient].Amount
+                Amount = clientDictionary[newclient].Amount,
+                AccountNumber = clientDictionary[newclient].AccountNumber
             };
 
             Assert.Equal(clientDictionary[newclient], newAccount);
@@ -184,6 +186,6 @@ namespace BankSystem.Tests
             }
 
             Assert.Equal(clientDictionary[newclient], newAccounts);
-        }*/
+        }
     }
 }

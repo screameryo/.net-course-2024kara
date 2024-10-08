@@ -63,7 +63,6 @@ namespace BankSystem.Data.Storages
         }
 
         public List<Client> Get(
-            Client item,
             Expression<Func<Client, bool>>? filter = null,
             Func<IQueryable<Client>, IOrderedQueryable<Client>>? orderBy = null,
             int page = 1,

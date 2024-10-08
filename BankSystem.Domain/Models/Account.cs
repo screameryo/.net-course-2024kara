@@ -2,6 +2,7 @@
 {
     public class Account
     {
+        public Guid Id { get; set; }
         public string NameCur { get; set; }
         public int Amount { get; set; }
         public string AccountNumber { get; set; }

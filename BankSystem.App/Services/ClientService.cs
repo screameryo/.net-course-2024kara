@@ -1,10 +1,8 @@
 ﻿using BankSystem.App.Exceptions;
-using BankSystem.App.Filter;
 using BankSystem.App.Interfaces;
 using BankSystem.Domain.Models;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
-using System.Numerics;
 
 namespace BankSystem.App.Services
 {
@@ -19,21 +17,21 @@ namespace BankSystem.App.Services
             _clientStorage = clientStorage ?? throw new ArgumentNullException(nameof(clientStorage), "Хранилище клиентов не может быть null.");
         }
 
-        public void Add(Client item)
+        public void Add(Client client)
         {
-            ValidateClient(item);
-            _clientStorage.Add(item);
+            ValidateClient(client);
+            _clientStorage.Add(client);
         }
 
-        public void Update(Client item)
+        public void Update(Client client)
         {
-            ValidateClient(item);
-            _clientStorage.Update(item);
+            ValidateClient(client);
+            _clientStorage.Update(client);
         }
 
-        public void Delete(Client item)
+        public void Delete(Client client)
         {
-            _clientStorage.Delete(item);
+            _clientStorage.Delete(client);
         }
 
         public void AddAccount(Client client, Account account)
@@ -56,13 +54,12 @@ namespace BankSystem.App.Services
         }
 
         public List<Client> Get(
-            Client item,
             Expression<Func<Client, bool>> filter = null,
             Func<IQueryable<Client>, IOrderedQueryable<Client>> orderBy = null,
             int page = 1,
             int pageSize = 10)
         {
-            return _clientStorage.Get(item, filter, orderBy, page, pageSize);
+            return _clientStorage.Get(filter, orderBy, page, pageSize);
         }
 
 
@@ -72,7 +69,7 @@ namespace BankSystem.App.Services
             var validationResults = new List<ValidationResult>();
             if (!Validator.TryValidateObject(client, new ValidationContext(client), validationResults, true))
             {
-                throw new ClientDataException($"Неверные данные лицевого счета: {string.Join(", ", validationResults.Select(r => r.ErrorMessage))}");
+                throw new ClientDataException($"Неверные данные: {string.Join(", ", validationResults.Select(r => r.ErrorMessage))}");
             }
 
             var today = DateOnly.FromDateTime(DateTime.Today);
