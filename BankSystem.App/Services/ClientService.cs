@@ -1,53 +1,78 @@
 ﻿using BankSystem.App.Exceptions;
-using BankSystem.Data.Storages;
+using BankSystem.App.Filter;
+using BankSystem.App.Interfaces;
 using BankSystem.Domain.Models;
 using System.ComponentModel.DataAnnotations;
+using System.Linq.Expressions;
+using System.Numerics;
 
 namespace BankSystem.App.Services
 {
-    public class ClientService
+    public class ClientService : IClientStorage
     {
-        private readonly ClientStorage _clientStorage;
+        private readonly IClientStorage _clientStorage;
 
-        public ClientService(ClientStorage clientStorage)
+        public Dictionary<Client, List<Account>> Data => _clientStorage.Data;
+
+        public ClientService(IClientStorage clientStorage)
         {
             _clientStorage = clientStorage ?? throw new ArgumentNullException(nameof(clientStorage), "Хранилище клиентов не может быть null.");
         }
 
-        public void AddClient(Client newClient)
+        public void Add(Client item)
         {
-            Account newAccount = CreateAccount();
-
-            if (ValidateClient(newClient))
-            {
-                _clientStorage.AddClient(newClient, new List<Account> { { newAccount } });
-            }
+            ValidateClient(item);
+            _clientStorage.Add(item);
         }
 
-        public void AddAdditionalAccount(Client client, Account account)
+        public void Update(Client item)
         {
-            if (ValidateClient(client))
-            {
-                if (client is null)
-                {
-                    throw new ArgumentNullException(nameof(client), "Клиент не может быть null.");
-                }
-
-                if (account is null)
-                {
-                    throw new ArgumentNullException(nameof(account), "Лицевой счет не может быть null.");
-                }
-
-                _clientStorage.AddAccountToClient(client, account);
-            }
+            ValidateClient(item);
+            _clientStorage.Update(item);
         }
 
-        private bool ValidateClient(Client client)
+        public void Delete(Client item)
+        {
+            _clientStorage.Delete(item);
+        }
+
+        public void AddAccount(Client client, Account account)
+        {
+            ValidateClient(client);
+            ValidateAccount(account);
+            _clientStorage.AddAccount(client, account);
+        }
+
+        public void UpdateAccount(Client client, Account account)
+        {
+            ValidateClient(client);
+            ValidateAccount(account);
+            _clientStorage.UpdateAccount(client, account);
+        }
+
+        public void DeleteAccount(Client client, Account account)
+        {
+            _clientStorage.DeleteAccount(client, account);
+        }
+
+        public List<Client> Get(
+            Client item,
+            Expression<Func<Client, bool>> filter = null,
+            Func<IQueryable<Client>, IOrderedQueryable<Client>> orderBy = null,
+            int page = 1,
+            int pageSize = 10)
+        {
+            return _clientStorage.Get(item, filter, orderBy, page, pageSize);
+        }
+
+
+
+        private void ValidateClient(Client client)
         {
             var validationResults = new List<ValidationResult>();
             if (!Validator.TryValidateObject(client, new ValidationContext(client), validationResults, true))
             {
-                throw new ClientDataException($"Неверные данные клиента {validationResults.Select(r => r.ErrorMessage).Aggregate((a, b) => $"{a}{Environment.NewLine}{b}")}");
+                throw new ClientDataException($"Неверные данные лицевого счета: {string.Join(", ", validationResults.Select(r => r.ErrorMessage))}");
             }
 
             var today = DateOnly.FromDateTime(DateTime.Today);
@@ -63,37 +88,18 @@ namespace BankSystem.App.Services
                 throw new ClientDataException("Клиент должен быть старше 18 лет.");
             }
 
-            if(client.PassportNumber is null || client.PassportSeries is null)
+            if (string.IsNullOrEmpty(client.PassportNumber?.Trim()) || string.IsNullOrEmpty(client.PassportSeries?.Trim()))
             {
                 throw new ClientDataException("У клиента отсутствуют паспортные данные.");
             }
-
-            if (string.IsNullOrEmpty(client.PassportNumber.Trim()) || string.IsNullOrEmpty(client.PassportSeries.Trim()))
-            {
-                throw new ClientDataException("У клиента отсутствуют паспортные данные.");
-            }
-
-            return true;
         }
 
-        private Account CreateAccount()
+        private void ValidateAccount(Account account)
         {
-            Random random = new Random();
-            var account = new Account
+            var validationResults = new List<ValidationResult>();
+            if (!Validator.TryValidateObject(account, new ValidationContext(account), validationResults, true))
             {
-                Cur = new Currency { Name = "US Dollar", NumCode = "840", Symbol = "$" },
-                Amount = 0,
-                AccountNumber = $"222484066{random.Next(0, 10000000).ToString("D7")}"
-            };
-
-            return account;
-        }
-
-        public void UpdateAccount(Client client, Account account, int newAmount)
-        {
-            if (client is null)
-            {
-                throw new ArgumentNullException(nameof(client), "Клиент не может быть null.");
+                throw new AccountDataException($"Неверные данные лицевого счета: {string.Join(", ", validationResults.Select(r => r.ErrorMessage))}");
             }
 
             if (account is null)
@@ -101,24 +107,15 @@ namespace BankSystem.App.Services
                 throw new ArgumentNullException(nameof(account), "Лицевой счет не может быть null.");
             }
 
-            if(newAmount < 0)
+            if (string.IsNullOrEmpty(account.AccountNumber?.Trim()))
             {
-                throw new AccountDataException("Сумма на лицевом счете меньше 0.");
+                throw new AccountDataException("Номер лицевого счета не может быть пустым.");
             }
 
-            if (_clientStorage.ContainsClient(client))
+            if (account.Amount < 0)
             {
-                _clientStorage.UpdateAccount(client, account, newAmount);
+                throw new AccountDataException("Сумма на лицевом счете не может быть отрицательной.");
             }
-            else
-            {
-                throw new ClientDataException("Клиент не найден.");
-            }
-        }
-
-        public Dictionary<Client, List<Account>> SearchClient(string fio = "", string phone = "", string passport = "", DateOnly? dateFrom = null, DateOnly? dateTo = null)
-        {
-            return _clientStorage.SearchClient(fio, phone, passport, dateFrom, dateTo);
         }
     }
 }

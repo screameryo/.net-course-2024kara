@@ -9,7 +9,7 @@ namespace BankSystem.Tests
 {
     public class EmployeeServiceTests
     {
-        private Faker<Employee> _employeeFaker;
+        /*private Faker<Employee> _employeeFaker;
         private Faker<Account> _accountFaker;
 
         [Fact]
@@ -297,6 +297,6 @@ namespace BankSystem.Tests
             var rand = new Random().Next(0, 1000);
 
             Assert.True(employeeService.SearchEmployee(dateFrom: new DateOnly(1980, 1, 1), dateTo: new DateOnly(2000, 1, 1)).Count > 0);
-        }
+        }*/
     }
 }

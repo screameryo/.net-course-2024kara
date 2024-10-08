@@ -1,13 +1,8 @@
-﻿using BankSystem.App.Exceptions;
-using BankSystem.Data.Storages;
-using BankSystem.Domain.Models;
-using System.ComponentModel.DataAnnotations;
-
-namespace BankSystem.App.Services
+﻿namespace BankSystem.App.Services
 {
     public class EmployeeService
     {
-        private readonly EmployeeStorage _employeeStorage;
+        /*private readonly EmployeeStorage _employeeStorage;
 
         public EmployeeService(EmployeeStorage employeeStorage)
         {
@@ -119,6 +114,6 @@ namespace BankSystem.App.Services
         public Dictionary<Employee, List<Account>> SearchEmployee(string fio = "", string phone = "", string passport = "", DateOnly? dateFrom = null, DateOnly? dateTo = null)
         {
             return _employeeStorage.SearchEmployee(fio, phone, passport, dateFrom, dateTo);
-        }
+        }*/
     }
 }

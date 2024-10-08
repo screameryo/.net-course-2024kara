@@ -5,7 +5,7 @@ namespace BankSystem.App.Services
 {
     public class TestDataGenerator
     {
-        public List<Employee> GenerateEmployee()
+        /*public List<Employee> GenerateEmployee()
         {
             var faker = new Faker<Employee>()
                 .RuleFor(e => e.FName, f => f.Name.FirstName())
@@ -115,6 +115,6 @@ namespace BankSystem.App.Services
             }
 
             return clientAccountsDictionary;
-        }
+        }*/
     }
 }

@@ -2,7 +2,7 @@
 {
     public class Account
     {
-        public Currency Cur { get; set; }
+        public string NameCur { get; set; }
         public int Amount { get; set; }
         public string AccountNumber { get; set; }
 
@@ -14,12 +14,12 @@
             }
 
             Account a = (Account)obj;
-            return Cur.NumCode == a.Cur.NumCode && Amount == a.Amount && AccountNumber == a.AccountNumber;
+            return NameCur == a.NameCur && Amount == a.Amount && AccountNumber == a.AccountNumber;
         }
 
         public override int GetHashCode()
         {
-            return Cur.GetHashCode() + Amount.GetHashCode() + AccountNumber.GetHashCode();
+            return NameCur.GetHashCode() + Amount.GetHashCode() + AccountNumber.GetHashCode();
         }
     }
 }

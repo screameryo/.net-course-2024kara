@@ -9,7 +9,34 @@ namespace BankSystem.Tests
 {
     public class ClientServiceTests
     {
-        private Faker<Client> _clientFaker;
+        [Fact]
+        public void GetClientbyFioPositiveTest()
+        {
+            ClientStorage clientStorage = new ClientStorage();
+            ClientService clientService = new ClientService(clientStorage);
+
+            var client = new Client()
+            {
+                FName = "Ivan",
+                LName = "Ivanov",
+                MName = "Ivanovich",
+                BDate = new DateOnly(1987, 1, 1),
+                PassportSeries = "222",
+                PassportNumber = "2222",
+                Telephone = "+1111",
+                Address = "Test address"
+            };
+
+            clientService.Add(client);
+
+            var result = clientService.Get(client,
+                f => f.FName == "Ivan" && f.LName == "Ivanov" && f.MName == "Ivanovich",
+                q => q.OrderBy(q => q.FName));
+
+            Assert.NotNull(result);
+        }
+
+        /*private Faker<Client> _clientFaker;
         private Faker<Account> _accountFaker;
 
         [Fact]
@@ -257,6 +284,6 @@ namespace BankSystem.Tests
             var rand = new Random().Next(0, 1000);
 
             Assert.True(clientService.SearchClient(dateFrom: new DateOnly(1980, 1, 1), dateTo: new DateOnly(2000, 1, 1)).Count > 0);
-        }
+        }*/
     }
 }

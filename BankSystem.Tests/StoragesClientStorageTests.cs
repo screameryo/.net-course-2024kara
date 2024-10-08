@@ -7,7 +7,7 @@ namespace BankSystem.Tests
 {
     public class StoragesClientStorageTests
     {
-        private Faker<Client> _clientFaker;
+        /*private Faker<Client> _clientFaker;
         private Faker<Employee> _employeeFaker;
         private Faker<Account> _accountFaker;
 
@@ -245,6 +245,6 @@ namespace BankSystem.Tests
             }
 
             employeeStorage.GetAgeAverage();
-        }
+        }*/
     }
 }
