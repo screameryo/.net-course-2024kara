@@ -8,14 +8,14 @@ namespace Practice
     {
         static void Main(string[] args)
         {
-            PracticeOneRefValType();
+            //PracticeOneRefValType();
 
-            PracticeTwoListDict();
+            //PracticeTwoListDict();
 
             Console.ReadKey();
         }
 
-        private static void ChangeContract(ref Employee employee)
+        /*private static void ChangeContract(ref Employee employee)
         {
             employee.Contract = $"Contract to {DateTime.Now.AddMonths(36).ToString("d")}";
         }
@@ -115,6 +115,6 @@ namespace Practice
             var clientsearchbykey = clientsDictionary[findtelephonefordictionary];
             watch.Stop();
             Console.WriteLine($"Search client in clientsDictionary by key: {watch.ElapsedMilliseconds} ms ({watch.ElapsedTicks} ticks){Environment.NewLine}");
-        }
+        }*/
     }
 }

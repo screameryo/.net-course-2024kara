@@ -62,8 +62,9 @@ namespace BankSystem.Tests
             int rand = new Random().Next(0, 100);
             Account newAccount = new Account()
             {
-                Cur = clientDictionary.Values.ElementAt(rand).Cur,
-                Amount = clientDictionary.Values.ElementAt(rand).Amount
+                NameCur = clientDictionary.Values.ElementAt(rand).NameCur,
+                Amount = clientDictionary.Values.ElementAt(rand).Amount,
+                AccountNumber = clientDictionary.Values.ElementAt(rand).AccountNumber
             };
 
             Assert.Equal(clientDictionary.Values.ElementAt(rand), newAccount);
@@ -84,12 +85,7 @@ namespace BankSystem.Tests
                 newAccounts.Add(account.Key,
                     new Account()
                     {
-                        Cur = new Currency()
-                        {
-                            Name = account.Value.Cur.Name,
-                            NumCode = account.Value.Cur.NumCode,
-                            Symbol = account.Value.Cur.Symbol
-                        },
+                        NameCur = account.Value.NameCur,
                         Amount = account.Value.Amount,
                         AccountNumber = account.Value.AccountNumber
                     }
@@ -149,8 +145,9 @@ namespace BankSystem.Tests
 
             Account newAccount = new Account()
             {
-                Cur = clientDictionary[newclient].Cur,
-                Amount = clientDictionary[newclient].Amount
+                NameCur = clientDictionary[newclient].NameCur,
+                Amount = clientDictionary[newclient].Amount,
+                AccountNumber = clientDictionary[newclient].AccountNumber
             };
 
             Assert.Equal(clientDictionary[newclient], newAccount);
@@ -182,12 +179,7 @@ namespace BankSystem.Tests
                 newAccounts.Add(account.Key,
                     new Account()
                     {
-                        Cur = new Currency()
-                        {
-                            Name = account.Value.Cur.Name,
-                            NumCode = account.Value.Cur.NumCode,
-                            Symbol = account.Value.Cur.Symbol
-                        },
+                        NameCur = account.Value.NameCur,
                         Amount = account.Value.Amount,
                         AccountNumber = account.Value.AccountNumber
                     });

@@ -2,6 +2,8 @@
 {
     public class Person
     {
+        public Guid Id { get; set; }
+
         public string FName { get; set; }
 
         public string LName { get; set; }
@@ -22,5 +24,7 @@
         {
             return $"{FName} {LName} {MName}";
         }
+
+        public List<string> Bonuses { get; set; }
     }
 }

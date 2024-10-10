@@ -1,53 +1,90 @@
 ﻿using BankSystem.App.Exceptions;
-using BankSystem.Data.Storages;
+using BankSystem.App.Interfaces;
 using BankSystem.Domain.Models;
 using System.ComponentModel.DataAnnotations;
+using System.Linq.Expressions;
 
 namespace BankSystem.App.Services
 {
-    public class EmployeeService
+    public class EmployeeService : IEmployeeStorage
     {
-        private readonly EmployeeStorage _employeeStorage;
+        private readonly IEmployeeStorage _employeeStorage;
 
-        public EmployeeService(EmployeeStorage employeeStorage)
+        public Dictionary<Employee, List<Account>> Data => _employeeStorage.Data;
+
+        public EmployeeService(IEmployeeStorage employeeStorage)
         {
             _employeeStorage = employeeStorage ?? throw new ArgumentNullException(nameof(employeeStorage), "Хранилище сотрудников не может быть null.");
         }
 
-        public void AddEmployee(Employee newEmployee)
+        public void Add(Employee employee)
         {
-            Account newAccount = CreateAccount();
-
-            if (ValidateEmployee(newEmployee))
-            {
-                _employeeStorage.AddEmployee(newEmployee, new List<Account> { { newAccount } });
-            }
+            ValidateEmployee(employee);
+            _employeeStorage.Add(employee);
         }
 
-        public void AddAdditionalAccount(Employee employee, Account account)
+        public void Update(Employee employee)
         {
-            if (ValidateEmployee(employee))
-            {
-                if (employee is null)
-                {
-                    throw new ArgumentNullException(nameof(employee), "Сотрудник не может быть null.");
-                }
+            ValidateEmployee(employee);
+            _employeeStorage.Update(employee);
+        }
 
-                if (account is null)
-                {
-                    throw new ArgumentNullException(nameof(account), "Лицевой счет не может быть null.");
-                }
+        public void Delete(Employee employee)
+        {
+            _employeeStorage.Delete(employee);
+        }
 
-                _employeeStorage.AddAccountToEmployee(employee, account);
-            }
-        }        
+        public void AddEmployee(Employee employee)
+        {
+            ValidateEmployee(employee);
+            _employeeStorage.Add(employee);
+        }
 
-        private bool ValidateEmployee(Employee employee)
+        public void UpdateEmployee(Employee employee)
+        {
+            ValidateEmployee(employee);
+            _employeeStorage.Update(employee);
+        }
+
+        public void DeleteEmployee(Employee employee)
+        {
+            _employeeStorage.Delete(employee);
+        }
+
+        public void AddAccount(Employee employee, Account account)
+        {
+            ValidateEmployee(employee);
+            ValidateAccount(account);
+            _employeeStorage.AddAccount(employee, account);
+        }
+
+        public void UpdateAccount(Employee employee, Account account)
+        {
+            ValidateEmployee(employee);
+            ValidateAccount(account);
+            _employeeStorage.UpdateAccount(employee, account);
+        }
+
+        public void DeleteAccount(Employee employee, Account account)
+        {
+            _employeeStorage.DeleteAccount(employee, account);
+        }
+
+        public List<Employee> Get(
+            Expression<Func<Employee, bool>> filter = null,
+            Func<IQueryable<Employee>, IOrderedQueryable<Employee>> orderBy = null,
+            int page = 1,
+            int pageSize = 10)
+        {
+            return _employeeStorage.Get(filter, orderBy, page, pageSize);
+        }
+
+        private void ValidateEmployee(Employee employee)
         {
             var validationResults = new List<ValidationResult>();
             if (!Validator.TryValidateObject(employee, new ValidationContext(employee), validationResults, true))
             {
-                throw new EmployeeDataException($"Неверные данные сотрудника {validationResults.Select(r => r.ErrorMessage).Aggregate((a, b) => $"{a}{Environment.NewLine}{b}")}");
+                throw new EmployeeDataException($"Неверные данные: {string.Join(", ", validationResults.Select(r => r.ErrorMessage))}");
             }
 
             var today = DateOnly.FromDateTime(DateTime.Today);
@@ -63,37 +100,18 @@ namespace BankSystem.App.Services
                 throw new EmployeeDataException("Сотрудник должен быть старше 18 лет.");
             }
 
-            if (employee.PassportNumber is null || employee.PassportSeries is null)
+            if (string.IsNullOrEmpty(employee.PassportNumber?.Trim()) || string.IsNullOrEmpty(employee.PassportSeries?.Trim()))
             {
                 throw new EmployeeDataException("У сотрудника отсутствуют паспортные данные.");
             }
-
-            if (string.IsNullOrEmpty(employee.PassportNumber.Trim()) || string.IsNullOrEmpty(employee.PassportSeries.Trim()))
-            {
-                throw new EmployeeDataException("У сотрудника отсутствуют паспортные данные.");
-            }
-
-            return true;
         }
 
-        private Account CreateAccount()
+        private void ValidateAccount(Account account)
         {
-            Random random = new Random();
-            var account = new Account
+            var validationResults = new List<ValidationResult>();
+            if (!Validator.TryValidateObject(account, new ValidationContext(account), validationResults, true))
             {
-                Cur = new Currency { Name = "US Dollar", NumCode = "840", Symbol = "$" },
-                Amount = 0,
-                AccountNumber = $"222484066{random.Next(0, 10000000).ToString("D7")}"
-            };
-
-            return account;
-        }
-
-        public void UpdateAccount(Employee employee, Account account, int newAmount)
-        {
-            if (employee is null)
-            {
-                throw new ArgumentNullException(nameof(employee), "Сотрудник не может быть null.");
+                throw new AccountDataException($"Неверные данные лицевого счета: {string.Join(", ", validationResults.Select(r => r.ErrorMessage))}");
             }
 
             if (account is null)
@@ -101,24 +119,15 @@ namespace BankSystem.App.Services
                 throw new ArgumentNullException(nameof(account), "Лицевой счет не может быть null.");
             }
 
-            if (newAmount < 0)
+            if (string.IsNullOrEmpty(account.AccountNumber?.Trim()))
             {
-                throw new AccountDataException("Сумма на лицевом счете меньше 0.");
+                throw new AccountDataException("Номер лицевого счета не может быть пустым.");
             }
 
-            if (_employeeStorage.ContainsEmployee(employee))
+            if (account.Amount < 0)
             {
-                _employeeStorage.UpdateAccount(employee, account, newAmount);
+                throw new AccountDataException("Сумма на лицевом счете не может быть отрицательной.");
             }
-            else
-            {
-                throw new ClientDataException("Сотрудник не найден.");
-            }
-        }
-
-        public Dictionary<Employee, List<Account>> SearchEmployee(string fio = "", string phone = "", string passport = "", DateOnly? dateFrom = null, DateOnly? dateTo = null)
-        {
-            return _employeeStorage.SearchEmployee(fio, phone, passport, dateFrom, dateTo);
         }
     }
 }

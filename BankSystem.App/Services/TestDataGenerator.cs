@@ -63,14 +63,9 @@ namespace BankSystem.App.Services
                 .RuleFor(c => c.PassportNumber, f => f.Random.AlphaNumeric(8))
                 .RuleFor(p => p.Telephone, f => f.Phone.PhoneNumber())
                 .RuleFor(p => p.Address, f => f.Address.FullAddress());
-            
-            var currencyFaker = new Faker<Currency>()
-                .RuleFor(p => p.Name, f => f.Finance.Currency().Description)
-                .RuleFor(p => p.NumCode, f => f.Finance.Currency().Code)
-                .RuleFor(p => p.Symbol, f => f.Finance.Currency().Symbol);
 
             var accountFaker = new Faker<Account>()
-                .RuleFor(p => p.Cur, f => currencyFaker.Generate())
+                .RuleFor(p => p.NameCur, f => "USD")
                 .RuleFor(p => p.Amount, f => f.Random.Number(100, 10000))
                 .RuleFor(p => p.AccountNumber, f => f.Random.AlphaNumeric(8));
 
@@ -96,13 +91,9 @@ namespace BankSystem.App.Services
                 .RuleFor(p => p.Telephone, f => f.Phone.PhoneNumber())
                 .RuleFor(p => p.Address, f => f.Address.FullAddress());
 
-            var currencyFaker = new Faker<Currency>()
-                .RuleFor(p => p.Name, f => f.Finance.Currency().Description)
-                .RuleFor(p => p.NumCode, f => f.Finance.Currency().Code)
-                .RuleFor(p => p.Symbol, f => f.Finance.Currency().Symbol);
-
-            var accountFaker = new Faker<Account>()
-                .RuleFor(p => p.Cur, f => currencyFaker.Generate())
+            var accountFaker = new Faker<Account>()                
+                .RuleFor(p => p.NameCur, f => "USD")
+                .RuleFor(p => p.AccountNumber, f => f.Random.AlphaNumeric(16))
                 .RuleFor(p => p.Amount, f => f.Random.Number(100, 10000));
 
             Dictionary<Client, Account> clientAccountsDictionary = new Dictionary<Client, Account>();
