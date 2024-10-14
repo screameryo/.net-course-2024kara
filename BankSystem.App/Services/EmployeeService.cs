@@ -6,13 +6,11 @@ using System.Linq.Expressions;
 
 namespace BankSystem.App.Services
 {
-    public class EmployeeService : IEmployeeStorage
+    public class EmployeeService : IStorage<Employee>
     {
-        private readonly IEmployeeStorage _employeeStorage;
+        private readonly IStorage<Employee> _employeeStorage;
 
-        public Dictionary<Employee, List<Account>> Data => _employeeStorage.Data;
-
-        public EmployeeService(IEmployeeStorage employeeStorage)
+        public EmployeeService(IStorage<Employee> employeeStorage)
         {
             _employeeStorage = employeeStorage ?? throw new ArgumentNullException(nameof(employeeStorage), "Хранилище сотрудников не может быть null.");
         }
@@ -49,25 +47,6 @@ namespace BankSystem.App.Services
         public void DeleteEmployee(Employee employee)
         {
             _employeeStorage.Delete(employee);
-        }
-
-        public void AddAccount(Employee employee, Account account)
-        {
-            ValidateEmployee(employee);
-            ValidateAccount(account);
-            _employeeStorage.AddAccount(employee, account);
-        }
-
-        public void UpdateAccount(Employee employee, Account account)
-        {
-            ValidateEmployee(employee);
-            ValidateAccount(account);
-            _employeeStorage.UpdateAccount(employee, account);
-        }
-
-        public void DeleteAccount(Employee employee, Account account)
-        {
-            _employeeStorage.DeleteAccount(employee, account);
         }
 
         public List<Employee> Get(

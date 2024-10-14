@@ -1,19 +1,19 @@
 ﻿using BankSystem.App.Interfaces;
 using BankSystem.Domain.Models;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace BankSystem.Data.Storages
 {
-    public class EmployeeStorage : IEmployeeStorage
+    public class EmployeeStorage : IStorage<Employee>
     {
+        private Dictionary<Guid, Employee> _employees = new Dictionary<Guid, Employee>();
 
-        private Dictionary<Employee, List<Account>> _employees = new Dictionary<Employee, List<Account>>();
-
-        public Dictionary<Employee, List<Account>> Data => _employees;
+        public Dictionary<Guid, Employee> Data => _employees;
 
         public void Add(Employee newClient)
         {
-            if (!_employees.TryAdd(newClient, new List<Account>()))
+            if (!_employees.TryAdd(newClient.Id, newClient))
             {
                 throw new InvalidOperationException("Сотрудник уже существует.");
             }
@@ -21,7 +21,7 @@ namespace BankSystem.Data.Storages
 
         public void Update(Employee client)
         {
-            if (!_employees.ContainsKey(client))
+            if (!_employees.ContainsKey(client.Id))
             {
                 throw new InvalidOperationException("Сотрудник не найден.");
             }
@@ -29,37 +29,9 @@ namespace BankSystem.Data.Storages
 
         public void Delete(Employee client)
         {
-            if (!_employees.Remove(client))
+            if (!_employees.Remove(client.Id))
             {
                 throw new InvalidOperationException("Сотрудник не найден.");
-            }
-        }
-
-        public void AddAccount(Employee client, Account account)
-        {
-            if (_employees[client].Contains(account))
-            {
-                throw new InvalidOperationException("Лицевой счет уже существует.");
-            }
-            else
-            {
-                _employees[client].Add(account);
-            }
-        }
-
-        public void UpdateAccount(Employee client, Account account)
-        {
-            if (!_employees[client].Contains(account))
-            {
-                throw new InvalidOperationException("Лицевой счет не найден.");
-            }
-        }
-
-        public void DeleteAccount(Employee client, Account account)
-        {
-            if (!_employees[client].Remove(account))
-            {
-                throw new InvalidOperationException("Лицевой счет не найден.");
             }
         }
 
@@ -69,7 +41,7 @@ namespace BankSystem.Data.Storages
             int page = 1,
             int pageSize = 10)
         {
-            var query = _employees.Keys.AsQueryable();
+            IQueryable<Employee> query = _employees.Values.AsQueryable();
 
             if (filter != null)
             {
@@ -81,10 +53,7 @@ namespace BankSystem.Data.Storages
                 query = orderBy(query);
             }
 
-            return query
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
+            return query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
         }
     }
 }
