@@ -4,6 +4,8 @@
     {
         public Guid Id { get; set; }
 
+        public ICollection<Account> Accounts { get; set; }
+
         public override bool Equals(object? obj)
         {
             if (obj == null || GetType() != obj.GetType())
@@ -12,10 +14,10 @@
             }
 
             Client c = (Client)obj;
-            return FName == c.FName 
-                && LName == c.LName 
-                && BDate == c.BDate 
-                && PassportNumber == c.PassportNumber 
+            return FName == c.FName
+                && LName == c.LName
+                && BDate == c.BDate
+                && PassportNumber == c.PassportNumber
                 && PassportSeries == c.PassportSeries
                 && Telephone == c.Telephone 
                 && Address == c.Address;

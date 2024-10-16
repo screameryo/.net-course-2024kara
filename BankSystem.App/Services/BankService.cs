@@ -10,7 +10,7 @@ namespace BankSystem.App.Services
         {
             double clearProfit = profit - expenses;
 
-            int ownerCount = employees.Count(x => x.Position == "Owner");
+            int ownerCount = employees.Count(x => x.Position.Name == "Owner");
 
             if(ownerCount == 0)
             {
@@ -33,8 +33,6 @@ namespace BankSystem.App.Services
                 PassportSeries = client.PassportSeries,
                 Address = client.Address,
                 Telephone = client.Telephone,
-                Position = position,
-                Department = department,
                 Salary = salary
             };
         }

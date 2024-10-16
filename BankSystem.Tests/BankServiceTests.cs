@@ -20,8 +20,6 @@ namespace BankSystem.Tests
                 PassportSeries = "AB",
                 Address = "123 Main St",
                 Telephone = "+1234567890",
-                Position = "Developer",
-                Department = "IT",
                 Salary = 50000,
                 Bonuses = new List<string>()
             };
@@ -107,8 +105,6 @@ namespace BankSystem.Tests
                 PassportSeries = "AB",
                 Address = "123 Main St",
                 Telephone = "+1234567890",
-                Position = "Developer",
-                Department = "IT",
                 Salary = 50000,
                 Bonuses = new List<string>()
             };

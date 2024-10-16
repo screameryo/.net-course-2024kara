@@ -1,37 +1,78 @@
 ﻿using BankSystem.App.Interfaces;
 using BankSystem.Domain.Models;
-using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace BankSystem.Data.Storages
 {
     public class EmployeeStorage : IStorage<Employee>
     {
-        private Dictionary<Guid, Employee> _employees = new Dictionary<Guid, Employee>();
+        private readonly BankSystemDbContext _dbContext;
 
-        public Dictionary<Guid, Employee> Data => _employees;
+        public EmployeeStorage(BankSystemDbContext bankSystemDbContext)
+        {
+            _dbContext = bankSystemDbContext;
+        }
 
         public void Add(Employee newClient)
         {
-            if (!_employees.TryAdd(newClient.Id, newClient))
+            try
             {
-                throw new InvalidOperationException("Сотрудник уже существует.");
+                _dbContext.Employees.Add(newClient);
+                _dbContext.SaveChanges();
+            }
+            catch(DbUpdateException ex)
+            {
+                throw new DbUpdateException("Ошибка при добавлении сотрудника.", ex);
             }
         }
 
-        public void Update(Employee client)
+        public void Update(Guid id, Employee employee)
         {
-            if (!_employees.ContainsKey(client.Id))
+            var clientToUpdate = _dbContext.Employees.Find(id);
+
+            if (clientToUpdate == null)
             {
                 throw new InvalidOperationException("Сотрудник не найден.");
             }
+
+            clientToUpdate.FName = employee.FName;
+            clientToUpdate.LName = employee.FName;
+            clientToUpdate.MName = employee.MName;
+            clientToUpdate.Telephone = employee.Telephone;
+            clientToUpdate.Address = employee.Address;
+            clientToUpdate.PassportNumber = employee.PassportNumber;
+            clientToUpdate.PassportSeries = employee.PassportSeries;
+            clientToUpdate.BDate = employee.BDate;
+
+            try
+            {
+                _dbContext.Employees.Update(clientToUpdate);
+                _dbContext.SaveChanges();
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new DbUpdateException("Ошибка при обновлении сотрудника.", ex);
+            }
         }
 
-        public void Delete(Employee client)
+        public void Delete(Guid id)
         {
-            if (!_employees.Remove(client.Id))
+            var clientToUpdate = _dbContext.Employees.Find(id);
+
+            if (clientToUpdate == null)
             {
-                throw new InvalidOperationException("Сотрудник не найден.");
+                throw new KeyNotFoundException("Сотрудник не найден.");
+            }
+
+            try
+            {
+                _dbContext.Employees.Remove(clientToUpdate);
+                _dbContext.SaveChanges();
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new DbUpdateException("Ошибка при удалении сотрудника.", ex);
             }
         }
 
@@ -41,7 +82,7 @@ namespace BankSystem.Data.Storages
             int page = 1,
             int pageSize = 10)
         {
-            IQueryable<Employee> query = _employees.Values.AsQueryable();
+            IQueryable<Employee> query = _dbContext.Employees.AsQueryable();
 
             if (filter != null)
             {
@@ -54,6 +95,11 @@ namespace BankSystem.Data.Storages
             }
 
             return query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+        }
+
+        public Employee? GetById(Guid id)
+        {
+            return _dbContext.Employees.Find(id);
         }
     }
 }

@@ -3,14 +3,13 @@
     public class Employee : Person
     {
         public Guid Id { get; set; }
-
-        public string Position { get; set; }
-
-        public int Salary { get; set; }
-
-        public string Department { get; set; }
-
+        public Guid? PositionId { get; set; }
+        public decimal Salary { get; set; }
+        public Guid? DepartmentId { get; set; }
         public string Contract { get; set; }
+
+        public Position Position { get; set; }
+        public Department Department { get; set; }
 
         public override bool Equals(object? obj)
         {

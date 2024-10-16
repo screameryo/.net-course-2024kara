@@ -9,10 +9,11 @@ namespace BankSystem.App.Services
     public class EmployeeService : IStorage<Employee>
     {
         private readonly IStorage<Employee> _employeeStorage;
+        private TestDataGenerator _testDataGenerator = new TestDataGenerator();
 
         public EmployeeService(IStorage<Employee> employeeStorage)
         {
-            _employeeStorage = employeeStorage ?? throw new ArgumentNullException(nameof(employeeStorage), "Хранилище сотрудников не может быть null.");
+            _employeeStorage = employeeStorage ?? throw new ArgumentNullException(nameof(employeeStorage), "Хранилище клиентов не может быть null.");
         }
 
         public void Add(Employee employee)
@@ -21,32 +22,15 @@ namespace BankSystem.App.Services
             _employeeStorage.Add(employee);
         }
 
-        public void Update(Employee employee)
+        public void Update(Guid id, Employee employee)
         {
             ValidateEmployee(employee);
-            _employeeStorage.Update(employee);
+            _employeeStorage.Update(id, employee);
         }
 
-        public void Delete(Employee employee)
+        public void Delete(Guid id)
         {
-            _employeeStorage.Delete(employee);
-        }
-
-        public void AddEmployee(Employee employee)
-        {
-            ValidateEmployee(employee);
-            _employeeStorage.Add(employee);
-        }
-
-        public void UpdateEmployee(Employee employee)
-        {
-            ValidateEmployee(employee);
-            _employeeStorage.Update(employee);
-        }
-
-        public void DeleteEmployee(Employee employee)
-        {
-            _employeeStorage.Delete(employee);
+            _employeeStorage.Delete(id);
         }
 
         public List<Employee> Get(
@@ -76,12 +60,12 @@ namespace BankSystem.App.Services
 
             if (age < 18)
             {
-                throw new EmployeeDataException("Сотрудник должен быть старше 18 лет.");
+                throw new EmployeeDataException("Клиент должен быть старше 18 лет.");
             }
 
             if (string.IsNullOrEmpty(employee.PassportNumber?.Trim()) || string.IsNullOrEmpty(employee.PassportSeries?.Trim()))
             {
-                throw new EmployeeDataException("У сотрудника отсутствуют паспортные данные.");
+                throw new EmployeeDataException("У клиента отсутствуют паспортные данные.");
             }
         }
 
@@ -107,6 +91,18 @@ namespace BankSystem.App.Services
             {
                 throw new AccountDataException("Сумма на лицевом счете не может быть отрицательной.");
             }
+        }
+
+        public Employee GetById(Guid id)
+        {
+            var employee = _employeeStorage.GetById(id);
+
+            if (employee == null)
+            {
+                throw new KeyNotFoundException("Сотрудник не найден.");
+            }
+
+            return employee;
         }
     }
 }
