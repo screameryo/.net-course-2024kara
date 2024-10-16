@@ -9,8 +9,7 @@ namespace BankSystem.App.Services
     public class ClientService : IClientStorage
     {
         private readonly IClientStorage _clientStorage;
-
-        public Dictionary<Client, List<Account>> Data => _clientStorage.Data;
+        private TestDataGenerator _testDataGenerator = new TestDataGenerator();
 
         public ClientService(IClientStorage clientStorage)
         {
@@ -23,34 +22,31 @@ namespace BankSystem.App.Services
             _clientStorage.Add(client);
         }
 
-        public void Update(Client client)
+        public void Update(Guid id, Client client)
         {
             ValidateClient(client);
-            _clientStorage.Update(client);
+            _clientStorage.Update(id, client);
         }
 
-        public void Delete(Client client)
+        public void Delete(Guid id)
         {
-            _clientStorage.Delete(client);
+            _clientStorage.Delete(id);
         }
 
-        public void AddAccount(Client client, Account account)
+        public void AddAccount(Guid id)
         {
-            ValidateClient(client);
+            _clientStorage.AddAccount(id);
+        }
+
+        public void UpdateAccount(Guid id, Account account)
+        {
             ValidateAccount(account);
-            _clientStorage.AddAccount(client, account);
+            _clientStorage.UpdateAccount(id, account);
         }
 
-        public void UpdateAccount(Client client, Account account)
+        public void DeleteAccount(Guid id)
         {
-            ValidateClient(client);
-            ValidateAccount(account);
-            _clientStorage.UpdateAccount(client, account);
-        }
-
-        public void DeleteAccount(Client client, Account account)
-        {
-            _clientStorage.DeleteAccount(client, account);
+            _clientStorage.DeleteAccount(id);
         }
 
         public List<Client> Get(
@@ -62,7 +58,10 @@ namespace BankSystem.App.Services
             return _clientStorage.Get(filter, orderBy, page, pageSize);
         }
 
-
+        public List<Account> GetAccounts(Guid id)
+        {
+            return _clientStorage.GetAccounts(id);
+        }
 
         private void ValidateClient(Client client)
         {
@@ -113,6 +112,18 @@ namespace BankSystem.App.Services
             {
                 throw new AccountDataException("Сумма на лицевом счете не может быть отрицательной.");
             }
+        }
+
+        public Client GetById(Guid id)
+        {
+            var client = _clientStorage.GetById(id);
+
+            if (client == null) 
+            {
+                throw new KeyNotFoundException("Клиент не найден.");
+            }
+
+            return client;
         }
     }
 }
